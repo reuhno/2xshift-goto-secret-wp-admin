@@ -161,6 +161,50 @@
 	"message": "Credits",
 	"description": "Title of the options page credits section"
   },
+  "relaunchAssistant": {
+	"message": "Relaunch the assistant",
+	"description": "Discreet link on the How it works card that reopens the first-install assistant"
+  },
+  "onboardingTitle": {
+	"message": "Welcome to 2xShift",
+	"description": "Title of the first-install assistant"
+  },
+  "onboardingIntro": {
+	"message": "On a WordPress site where you're not logged in, double-press Shift to reach its login page.",
+	"description": "Explanation sentence of the first-install assistant"
+  },
+  "onboardingFieldLabel": {
+	"message": "Your usual login address",
+	"description": "Label of the login address field in the assistant"
+  },
+  "onboardingFieldHelp": {
+	"message": "For example /admin-securisee/ if you've moved your login page. A path from the site's root.",
+	"description": "Help text under the login address field in the assistant"
+  },
+  "onboardingInfoBox": {
+	"message": "From then on, the first double Shift on each site will suggest this address. You'll be able to keep it, enter another one, or never redirect that site: it's decided case by case.",
+	"description": "Info box of the first-install assistant"
+  },
+  "onboardingSubmit": {
+	"message": "Let's go",
+	"description": "Primary button of the first-install assistant"
+  },
+  "onboardingAdvancedSettingsLink": {
+	"message": "Advanced settings",
+	"description": "Assistant link to the full options page"
+  },
+  "onboardingDoneTitle": {
+	"message": "All set",
+	"description": "Title of the assistant's completed state"
+  },
+  "onboardingDoneText": {
+	"message": "Head to one of your WordPress sites and double-press Shift.",
+	"description": "Sentence of the assistant's completed state"
+  },
+  "onboardingCloseTab": {
+	"message": "Close this tab",
+	"description": "Close button of the assistant's completed state"
+  },
   "popupNoHttpSite": {
 	"message": "No site on this tab",
 	"description": "Popup message shown when the active tab is not an http(s) page"

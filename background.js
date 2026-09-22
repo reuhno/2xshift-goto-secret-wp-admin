@@ -24,13 +24,13 @@ chrome.runtime.onInstalled.addListener((details) => {
 		log('Migration error (onInstalled):', error);
 	});
 
-	// N'ouvrir la page de réglages qu'à la première installation :
-	// onInstalled se déclenche aussi à chaque mise à jour de Chrome
-	// et à chaque rechargement d'une extension non empaquetée.
+	// N'ouvrir l'assistant de première installation qu'à la première
+	// installation : onInstalled se déclenche aussi à chaque mise à jour de
+	// Chrome et à chaque rechargement d'une extension non empaquetée.
 	if (details.reason !== "install") {
 		return;
 	}
-	chrome.runtime.openOptionsPage();
+	chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
 });
 
 // Normalise un hôte : minuscules, préfixe "www." retiré.

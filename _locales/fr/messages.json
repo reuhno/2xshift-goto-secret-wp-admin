@@ -161,6 +161,50 @@
 	  "message": "Crédits",
 	  "description": "Titre de la section « Crédits » de la page de réglages"
 	},
+	"relaunchAssistant": {
+	  "message": "Relancer l'assistant",
+	  "description": "Lien discret de la carte Fonctionnement qui rouvre l'assistant de première installation"
+	},
+	"onboardingTitle": {
+	  "message": "Bienvenue dans 2xShift",
+	  "description": "Titre de l'assistant de première installation"
+	},
+	"onboardingIntro": {
+	  "message": "Sur un site WordPress où vous n'êtes pas connecté, appuyez deux fois sur Shift pour rejoindre sa page de connexion.",
+	  "description": "Phrase d'explication de l'assistant de première installation"
+	},
+	"onboardingFieldLabel": {
+	  "message": "Votre adresse de connexion habituelle",
+	  "description": "Libellé du champ d'adresse de connexion de l'assistant"
+	},
+	"onboardingFieldHelp": {
+	  "message": "Par exemple /admin-securisee/ si vous déplacez votre page de connexion. Un chemin à partir de la racine du site.",
+	  "description": "Aide sous le champ d'adresse de connexion de l'assistant"
+	},
+	"onboardingInfoBox": {
+	  "message": "Ensuite, au premier double Shift sur chaque site, cette adresse vous sera proposée. Vous pourrez la garder, en saisir une autre ou ne jamais rediriger ce site : c'est au cas par cas.",
+	  "description": "Encart d'information de l'assistant de première installation"
+	},
+	"onboardingSubmit": {
+	  "message": "C'est parti",
+	  "description": "Bouton principal de l'assistant de première installation"
+	},
+	"onboardingAdvancedSettingsLink": {
+	  "message": "Réglages avancés",
+	  "description": "Lien de l'assistant vers la page de réglages complète"
+	},
+	"onboardingDoneTitle": {
+	  "message": "C'est prêt",
+	  "description": "Titre de l'état terminé de l'assistant de première installation"
+	},
+	"onboardingDoneText": {
+	  "message": "Rendez-vous sur l'un de vos sites WordPress et appuyez deux fois sur Shift.",
+	  "description": "Phrase de l'état terminé de l'assistant de première installation"
+	},
+	"onboardingCloseTab": {
+	  "message": "Fermer cet onglet",
+	  "description": "Bouton de fermeture de l'onglet de l'état terminé de l'assistant"
+	},
 	"popupNoHttpSite": {
 	  "message": "Aucun site sur cet onglet",
 	  "description": "Message du popup quand l'onglet actif n'est pas une page http(s)"

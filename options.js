@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('fonctionnement-p1').innerText = chrome.i18n.getMessage("optionsFonctionnementP1");
 		document.getElementById('fonctionnement-p2').innerText = chrome.i18n.getMessage("optionsFonctionnementP2");
 		document.getElementById('explainations').innerText = chrome.i18n.getMessage("explainations");
+		document.getElementById('relaunch-assistant').innerText = chrome.i18n.getMessage("relaunchAssistant");
 		document.getElementById('reglages-title').innerText = chrome.i18n.getMessage("optionsReglagesTitle");
 		document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
 		document.getElementById('ask-on-new-sites-label').innerText = chrome.i18n.getMessage("askOnNewSitesLabel");
@@ -47,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (!hasChrome) {
 		return;
 	}
+
+	document.getElementById('relaunch-assistant').addEventListener('click', () => {
+		chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+	});
 
 	const SITE_PREFIX = 'site:';
 

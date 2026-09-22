@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>2xShift Goto secret wp-admin — Bienvenue</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .onboarding-card {
+      max-width: 520px;
+      width: 100%;
+      padding: 32px;
+      margin: 0;
+    }
+    .onboarding-icon {
+      display: block;
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 20px;
+    }
+    #onboarding-title,
+    #onboarding-done-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin: 0 0 12px;
+    }
+    .onboarding-help {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+    .onboarding-infobox {
+      background: var(--bg);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+    .onboarding-submit {
+      width: 100%;
+    }
+    .onboarding-advanced-link {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+    .onboarding-check {
+      display: block;
+      width: 40px;
+      height: 40px;
+      color: var(--accent);
+      margin: 0 auto 16px;
+    }
+    .onboarding-address {
+      font-weight: 600;
+      margin: 8px 0 20px;
+    }
+    #onboarding-step-done .btn-secondary {
+      width: 100%;
+    }
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="card onboarding-card">
+    <img class="onboarding-icon" src="icons/icon48.png" alt="">
+
+    <div id="onboarding-step-form">
+      <h1 id="onboarding-title">Bienvenue dans 2xShift</h1>
+      <p id="onboarding-intro">Sur un site WordPress où vous n'êtes pas connecté, appuyez deux fois sur Shift pour rejoindre sa page de connexion.</p>
+
+      <form id="onboarding-form">
+        <label id="onboarding-field-label" for="onboarding-path">Votre adresse de connexion habituelle</label>
+        <input type="text" id="onboarding-path" name="onboarding-path" placeholder="/wp-admin/" value="/wp-admin/" autocomplete="off">
+        <p id="onboarding-field-help" class="onboarding-help">Par exemple /admin-securisee/ si vous déplacez votre page de connexion. Un chemin à partir de la racine du site.</p>
+
+        <p id="onboarding-infobox" class="onboarding-infobox">Ensuite, au premier double Shift sur chaque site, cette adresse vous sera proposée. Vous pourrez la garder, en saisir une autre ou ne jamais rediriger ce site : c'est au cas par cas.</p>
+
+        <button type="submit" id="onboarding-submit" class="btn-primary onboarding-submit">C'est parti</button>
+      </form>
+
+      <a href="#" id="onboarding-advanced-link" class="onboarding-advanced-link">Réglages avancés</a>
+    </div>
+
+    <div id="onboarding-step-done" hidden>
+      <svg class="onboarding-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="8 12.5 11 15.5 16 9"></polyline>
+      </svg>
+      <h1 id="onboarding-done-title">C'est prêt</h1>
+      <p id="onboarding-done-text">Rendez-vous sur l'un de vos sites WordPress et appuyez deux fois sur Shift.</p>
+      <p id="onboarding-done-address" class="onboarding-address"></p>
+      <button type="button" id="onboarding-close" class="btn-secondary">Fermer cet onglet</button>
+    </div>
+  </div>
+
+  <script src="onboarding.js"></script>
+</body>
+</html>
