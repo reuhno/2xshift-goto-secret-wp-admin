@@ -3,76 +3,176 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.documentElement.lang = chrome.i18n.getUILanguage();
 
 	document.getElementById('welcome-text').innerText = chrome.i18n.getMessage("welcomeMessage");
-	document.getElementById('text-exception').innerText = chrome.i18n.getMessage("textException");
 	document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
-	document.getElementById('add-exception').innerText = chrome.i18n.getMessage("addExceptionButton");
+	document.getElementById('ask-on-new-sites-label').innerText = chrome.i18n.getMessage("askOnNewSitesLabel");
+	document.getElementById('ask-on-new-sites-help').innerText = chrome.i18n.getMessage("askOnNewSitesHelp");
 	document.getElementById('save-button').innerText = chrome.i18n.getMessage("saveButton");
 	document.getElementById('explainations').innerText = chrome.i18n.getMessage("explainations");
-	document.getElementById('helperException').innerText = chrome.i18n.getMessage("helperException");
 	document.getElementById('debug-label').innerText = chrome.i18n.getMessage("debugLabel");
-	
-	
-	
-	
-	
-	
-  const form = document.getElementById('options-form');
-  const adminUrlInput = document.getElementById('admin-url');
-  const debugCheckbox = document.getElementById('debug');
-  const exceptionsList = document.getElementById('exceptions-list');
-  const addExceptionButton = document.getElementById('add-exception');
-  const exceptionTemplate = document.getElementById('exception-template').content;
+	document.getElementById('sites-section-title').innerText = chrome.i18n.getMessage("sitesSectionTitle");
+	document.getElementById('sites-table-host-header').innerText = chrome.i18n.getMessage("sitesTableHostHeader");
+	document.getElementById('sites-table-path-header').innerText = chrome.i18n.getMessage("sitesTablePathHeader");
+	document.getElementById('sites-table-actions-header').innerText = chrome.i18n.getMessage("sitesTableActionsHeader");
+	document.getElementById('sites-empty').innerText = chrome.i18n.getMessage("sitesEmpty");
+	document.getElementById('add-site-host').placeholder = chrome.i18n.getMessage("sitesAddHostPlaceholder");
+	document.getElementById('add-site-path').placeholder = chrome.i18n.getMessage("sitesAddPathPlaceholder");
+	document.getElementById('add-site-button').innerText = chrome.i18n.getMessage("addSiteButton");
 
-  // Load saved options
-  chrome.storage.sync.get(['adminUrl', 'exceptions', 'debug'], (data) => {
-	adminUrlInput.value = data.adminUrl || '';
-	debugCheckbox.checked = !!data.debug;
-	(data.exceptions || []).forEach(exception => {
-	  addException(exception.url, exception.adminUrl);
-	});
-  });
+	const form = document.getElementById('options-form');
+	const adminUrlInput = document.getElementById('admin-url');
+	const askOnNewSitesCheckbox = document.getElementById('ask-on-new-sites');
+	const debugCheckbox = document.getElementById('debug');
 
-  // Add exception
-  addExceptionButton.addEventListener('click', () => {
-	addException();
-  });
+	const sitesList = document.getElementById('sites-list');
+	const sitesEmpty = document.getElementById('sites-empty');
+	const sitesStatus = document.getElementById('sites-status');
+	const siteRowTemplate = document.getElementById('site-row-template').content;
+	const addSiteHostInput = document.getElementById('add-site-host');
+	const addSitePathInput = document.getElementById('add-site-path');
+	const addSiteButton = document.getElementById('add-site-button');
 
-  function addException(url = '', adminUrl = '') {
-	const clone = document.importNode(exceptionTemplate, true);
-	const exceptionElement = clone.querySelector('.exception');
-	const exceptionUrlInput = clone.querySelector('.exception-url');
-	const exceptionAdminUrlInput = clone.querySelector('.exception-admin-url');
-	const removeButton = clone.querySelector('.remove-exception');
+	const SITE_PREFIX = 'site:';
 
-	exceptionUrlInput.value = url;
-	exceptionAdminUrlInput.value = adminUrl;
-
-	removeButton.addEventListener('click', () => {
-	  exceptionElement.remove();
+	// Load saved options
+	chrome.storage.sync.get(['adminUrl', 'askOnNewSites', 'debug'], (data) => {
+		adminUrlInput.value = data.adminUrl || '';
+		askOnNewSitesCheckbox.checked = data.askOnNewSites !== false;
+		debugCheckbox.checked = !!data.debug;
 	});
 
-	exceptionsList.appendChild(clone);
-  }
+	loadSitesTable();
 
-  // Save options
-  form.addEventListener('submit', (event) => {
-	event.preventDefault();
+	function loadSitesTable() {
+		chrome.storage.sync.get(null, (data) => {
+			const hosts = Object.keys(data)
+				.filter(key => key.startsWith(SITE_PREFIX))
+				.map(key => key.slice(SITE_PREFIX.length))
+				.sort();
 
-	const adminUrl = adminUrlInput.value;
-	const debug = !!debugCheckbox.checked;
-	const exceptions = Array.from(exceptionsList.querySelectorAll('.exception')).map(exception => ({
-	  url: exception.querySelector('.exception-url').value,
-	  adminUrl: exception.querySelector('.exception-admin-url').value
-	}));
+			sitesList.innerHTML = '';
 
-	chrome.storage.sync.set({ adminUrl, exceptions, debug }, () => {
-	  const saveStatus = document.getElementById('save-status');
-	  saveStatus.textContent = chrome.i18n.getMessage('savedMessage');
-	  setTimeout(() => {
-		saveStatus.textContent = '';
-	  }, 2000);
+			hosts.forEach(host => {
+				addSiteRow(host, data[SITE_PREFIX + host]);
+			});
+
+			sitesEmpty.style.display = hosts.length === 0 ? '' : 'none';
+		});
+	}
+
+	function addSiteRow(host, rule) {
+		const clone = document.importNode(siteRowTemplate, true);
+		const row = clone.querySelector('.site-row');
+		const hostCell = clone.querySelector('.site-host');
+		const pathCell = clone.querySelector('.site-path');
+		const removeButton = clone.querySelector('.remove-site');
+
+		hostCell.textContent = host;
+		removeButton.innerText = chrome.i18n.getMessage('deleteButton');
+
+		const path = rule && rule.path !== undefined ? rule.path : null;
+
+		if (path === null) {
+			const mention = document.createElement('span');
+			mention.className = 'site-none-mention';
+			mention.textContent = chrome.i18n.getMessage('sitesNoneMention');
+			pathCell.appendChild(mention);
+		} else {
+			const pathInput = document.createElement('input');
+			pathInput.type = 'text';
+			pathInput.value = path;
+			pathInput.addEventListener('change', () => {
+				const raw = pathInput.value.trim();
+				if (!raw) {
+					pathInput.value = path;
+					return;
+				}
+				const normalized = normalizePath(raw);
+				chrome.storage.sync.set({ [SITE_PREFIX + host]: { path: normalized } }, () => {
+					pathInput.value = normalized;
+					showSitesStatus(chrome.i18n.getMessage('siteAddedMessage'));
+				});
+			});
+			pathCell.appendChild(pathInput);
+		}
+
+		removeButton.addEventListener('click', () => {
+			chrome.storage.sync.remove(SITE_PREFIX + host, () => {
+				row.remove();
+				if (sitesList.children.length === 0) {
+					sitesEmpty.style.display = '';
+				}
+				showSitesStatus(chrome.i18n.getMessage('siteRemovedMessage'));
+			});
+		});
+
+		sitesList.appendChild(clone);
+	}
+
+	// Mirrors background.js's normalizeHost(): lowercase hostname, "www." stripped.
+	function normalizeHostInput(value) {
+		const trimmed = value.trim();
+		if (!trimmed) {
+			return '';
+		}
+		const candidate = /^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(trimmed) ? trimmed : `https://${trimmed}`;
+		try {
+			const host = new URL(candidate).hostname.toLowerCase();
+			return host.startsWith('www.') ? host.slice(4) : host;
+		} catch (error) {
+			return '';
+		}
+	}
+
+	function normalizePath(raw) {
+		if (/^https?:\/\//i.test(raw)) {
+			try {
+				return new URL(raw).pathname;
+			} catch (error) {
+				return raw;
+			}
+		}
+		return raw.startsWith('/') ? raw : `/${raw}`;
+	}
+
+	function showSitesStatus(message) {
+		sitesStatus.textContent = message;
+		setTimeout(() => {
+			sitesStatus.textContent = '';
+		}, 2000);
+	}
+
+	addSiteButton.addEventListener('click', () => {
+		const host = normalizeHostInput(addSiteHostInput.value);
+		if (!host) {
+			addSiteHostInput.focus();
+			return;
+		}
+
+		const rawPath = addSitePathInput.value.trim();
+		const path = rawPath ? normalizePath(rawPath) : null;
+
+		chrome.storage.sync.set({ [SITE_PREFIX + host]: { path } }, () => {
+			addSiteHostInput.value = '';
+			addSitePathInput.value = '';
+			showSitesStatus(chrome.i18n.getMessage('siteAddedMessage'));
+			loadSitesTable();
+		});
 	});
-  });
+
+	// Save options
+	form.addEventListener('submit', (event) => {
+		event.preventDefault();
+
+		const adminUrl = adminUrlInput.value;
+		const askOnNewSites = !!askOnNewSitesCheckbox.checked;
+		const debug = !!debugCheckbox.checked;
+
+		chrome.storage.sync.set({ adminUrl, askOnNewSites, debug }, () => {
+			const saveStatus = document.getElementById('save-status');
+			saveStatus.textContent = chrome.i18n.getMessage('savedMessage');
+			setTimeout(() => {
+				saveStatus.textContent = '';
+			}, 2000);
+		});
+	});
 });
-
-

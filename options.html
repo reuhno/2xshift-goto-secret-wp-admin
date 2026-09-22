@@ -9,17 +9,22 @@
       background-color: #f4f4f9;
       color: #333;
       margin: 0;
-      padding: 20px;
-      max-width: 600px;
+      padding: 12px;
+      max-width: 100%;
+      box-sizing: border-box;
     }
     h1, h2 {
       color: #4CAF50;
     }
-    form {
+    form, .sites-section {
       background: #fff;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .sites-section {
+      margin-top: 20px;
     }
     label {
       display: block;
@@ -32,6 +37,7 @@
       margin-bottom: 20px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      box-sizing: border-box;
     }
     button {
       background: #4CAF50;
@@ -51,24 +57,15 @@
     button[type="submit"]:hover {
       background: #365a83;
     }
-    .exception {
+    .checkbox-field {
       display: flex;
-      align-items: flex-start;
-      margin-bottom: 10px;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
     }
-    .exception input {
-      flex: 1;
-      margin-right: 10px;
-    }
-    .remove-exception {
-      font-size: 14px;
-      padding-left: 5px;
-      padding-right: 5px;
-      margin: 0 10px 0 0;
-      background: #f44336;
-    }
-    .remove-exception:hover {
-      background: #d32f2f;
+    .checkbox-field label {
+      margin-bottom: 0;
+      font-weight: normal;
     }
     .welcome-message {
       background: #e7f4e4;
@@ -80,7 +77,7 @@
     .helper-text {
       font-size: 0.9em;
       color: #666;
-      margin-bottom: 20px;
+      margin: 0 0 16px 26px;
     }
     .credits {
       margin-top: 20px;
@@ -95,50 +92,116 @@
     .credits a:hover {
       text-decoration: underline;
     }
+    #sites-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+    #sites-table th {
+      text-align: left;
+      font-size: 0.85em;
+      color: #666;
+      padding: 6px 8px;
+      border-bottom: 2px solid #eee;
+    }
+    #sites-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #eee;
+      vertical-align: middle;
+    }
+    #sites-table td.site-host {
+      font-family: monospace;
+    }
+    #sites-table td input[type="text"] {
+      width: 100%;
+      margin: 0;
+      padding: 6px 8px;
+    }
+    #sites-table .site-none-mention {
+      color: #666;
+      font-style: italic;
+    }
+    #sites-table .remove-site {
+      background: #f44336;
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+    #sites-table .remove-site:hover {
+      background: #d32f2f;
+    }
+    #sites-empty {
+      color: #666;
+      font-style: italic;
+      margin: 0 0 16px;
+    }
+    .add-site-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .add-site-row input[type="text"] {
+      margin: 0;
+      flex: 1;
+    }
   </style>
 </head>
 <body>
   <h1>Options</h1>
   <div class="welcome-message">
     <p id="welcome-text"></p>
-    <p id="text-exception"></p>
-  
   </div>
   <form id="options-form">
-    <label id="admin-url-label" for="admin-url">URL d'admin par défaut :</label>
-    <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/" required>
-    <h2>Exceptions</h2>
-    <p id="helperException" class="helper-text">Entrez le domaine complet (par exemple, https://www.example.com) et l'URL d'admin pour chaque exception.</p>
-    <div id="exceptions-list"></div>
-    <div class="debug-field" style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
-      <input type="checkbox" id="debug" name="debug">
-      <label id="debug-label" for="debug" style="margin-bottom: 0;">Debug : écrire les journaux dans la console</label>
+    <label id="admin-url-label" for="admin-url">Proposition par défaut :</label>
+    <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/">
+    <div class="checkbox-field">
+      <input type="checkbox" id="ask-on-new-sites" name="ask-on-new-sites">
+      <label id="ask-on-new-sites-label" for="ask-on-new-sites">Demander sur chaque nouveau site</label>
     </div>
-    <button type="button" id="add-exception">Ajouter une exception</button>
+    <p id="ask-on-new-sites-help" class="helper-text"></p>
+    <div class="checkbox-field">
+      <input type="checkbox" id="debug" name="debug">
+      <label id="debug-label" for="debug">Debug : écrire les journaux dans la console</label>
+    </div>
     <button type="submit" id="save-button">Enregistrer</button>
     <p id="save-status" role="status" aria-live="polite"></p>
   </form>
 
-  <template id="exception-template">
-    <div class="exception">
-      <button type="button" class="remove-exception">Supprimer</button>
-      <input type="text" class="exception-url" placeholder="https://www.example.com" required>
-      <input type="text" class="exception-admin-url" placeholder="/autre-admin-secret/" required>
-     
+  <div class="sites-section">
+    <h2 id="sites-section-title">Sites mémorisés</h2>
+    <table id="sites-table">
+      <thead>
+        <tr>
+          <th id="sites-table-host-header"></th>
+          <th id="sites-table-path-header"></th>
+          <th id="sites-table-actions-header"></th>
+        </tr>
+      </thead>
+      <tbody id="sites-list"></tbody>
+    </table>
+    <p id="sites-empty" style="display: none;"></p>
+    <div class="add-site-row">
+      <input type="text" id="add-site-host" placeholder="exemple.com">
+      <input type="text" id="add-site-path" placeholder="/wp-admin/">
+      <button type="button" id="add-site-button">Ajouter</button>
     </div>
+    <p id="sites-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <template id="site-row-template">
+    <tr class="site-row">
+      <td class="site-host"></td>
+      <td class="site-path"></td>
+      <td><button type="button" class="remove-site">Supprimer</button></td>
+    </tr>
   </template>
-  
-  
 
   <div class="credits">
     <p id="explainations"></p>
-    
     <br/>
     <p>Développé avec méthodologie <a target="_blank" href="https://www.la-rache.com/">La RACHE</a> par <a href="https://www.reuhno.fr/" target="_blank">Renaud Pacouil</a> et ChatGPT.</p>
     <p><a href="https://ko-fi.com/reuhno" target="_blank">Offrez-moi un café</a> si ça vous rend service</p>
   </div>
 
   <script src="options.js"></script>
-  
  </body>
 </html>

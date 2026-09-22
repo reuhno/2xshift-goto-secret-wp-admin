@@ -8,28 +8,12 @@
   "description": "Description de l'extension"
   },
   "welcomeMessage": {
-	"message": "Bienvenue sur 2xShift Goto secret wp-admin ! Veuillez définir votre préfixe d'URL d'administration par défaut.",
+	"message": "Bienvenue sur 2xShift Goto secret wp-admin ! Sur un site WordPress où vous n'êtes pas connecté, un double appui sur Shift propose de mémoriser l'accès admin de ce site.",
 	"description": "Message de bienvenue pour la page d'options"
   },
-  "textException": {
-	  "message": "Vous pouvez également ajouter des exceptions pour changer l'URL sur certains sites.",
-	  "description": "Message de bienvenue expliquant les exceptions"
-	},
-	"helperException": {
-	  "message": "Entrez le domaine complet (par exemple, https://www.example.com) et l'URL d'admin pour chaque exception.",
-	  "description": "Explication sur la saisie du domaine d’exception"
-	},
   "adminUrlLabel": {
-	"message": "URL Admin par Défaut :",
-	"description": "Label pour l'input de l'URL d'admin"
-  },
-  "exceptionsLabel": {
-	"message": "Exceptions",
-	"description": "Label pour la section des exceptions"
-  },
-  "addExceptionButton": {
-	"message": "Ajouter une Exception",
-	"description": "Bouton pour ajouter une nouvelle exception"
+	"message": "Proposition par défaut :",
+	"description": "Label pour l'input de l'URL d'admin, utilisée comme proposition par défaut sur les nouveaux sites"
   },
   "saveButton": {
 	"message": "Enregistrer",
@@ -41,7 +25,7 @@
   },
   "deleteButton": {
 	  "message": "Supprimer",
-	  "description": "Bouton pour supprimer une ligne d’exception"
+	  "description": "Bouton pour supprimer un site mémorisé"
 	},
    "explainations": {
 	  "message": "Afin de ne pas faire de redirection inopinée sur un site qui nécessiterait d'appuyer plusieurs fois sur la touche Shift rapidement, le script détecte si le site surlequel nous naviguons est un bien site WordPress en vérifiant la présence de chaines wp-content wp-includes ou wp-admin dans le code source de la page.",
@@ -50,5 +34,103 @@
 	"debugLabel": {
 	  "message": "Debug : écrire les journaux dans la console",
 	  "description": "Libellé de la case à cocher debug"
+	},
+	"askOnNewSitesLabel": {
+	  "message": "Demander sur chaque nouveau site",
+	  "description": "Libellé de la case à cocher askOnNewSites"
+	},
+	"askOnNewSitesHelp": {
+	  "message": "Décochée : la proposition par défaut s'applique sans demander.",
+	  "description": "Aide de la case à cocher askOnNewSites"
+	},
+	"sitesSectionTitle": {
+	  "message": "Sites mémorisés",
+	  "description": "Titre de la section des sites mémorisés"
+	},
+	"sitesTableHostHeader": {
+	  "message": "Hôte",
+	  "description": "En-tête de colonne hôte du tableau"
+	},
+	"sitesTablePathHeader": {
+	  "message": "Chemin d'admin",
+	  "description": "En-tête de colonne chemin d'admin du tableau"
+	},
+	"sitesTableActionsHeader": {
+	  "message": "Actions",
+	  "description": "En-tête de colonne actions du tableau"
+	},
+	"sitesNoneMention": {
+	  "message": "Ne pas rediriger sur ce site",
+	  "description": "Affiché pour une règle de site sans redirection"
+	},
+	"sitesEmpty": {
+	  "message": "Aucun site mémorisé pour l'instant.",
+	  "description": "Affiché quand le tableau des sites mémorisés est vide"
+	},
+	"sitesAddHostPlaceholder": {
+	  "message": "exemple.com",
+	  "description": "Placeholder du champ hôte de l'ajout manuel"
+	},
+	"sitesAddPathPlaceholder": {
+	  "message": "/wp-admin/",
+	  "description": "Placeholder du champ chemin de l'ajout manuel"
+	},
+	"addSiteButton": {
+	  "message": "Ajouter",
+	  "description": "Bouton pour ajouter manuellement un site mémorisé"
+	},
+	"siteAddedMessage": {
+	  "message": "Site enregistré.",
+	  "description": "Message de confirmation après ajout/modification d'un site"
+	},
+	"siteRemovedMessage": {
+	  "message": "Site supprimé.",
+	  "description": "Message de confirmation après suppression d'un site"
+	},
+	"overlayTitle": {
+	  "message": "Mémoriser l'accès admin de $HOST$ ?",
+	  "description": "Titre de l'overlay de première utilisation",
+	  "placeholders": {
+		"host": {
+		  "content": "$1"
+		}
+	  }
+	},
+	"overlayOptionDefault": {
+	  "message": "/wp-admin/",
+	  "description": "Option de l'overlay : chemin d'admin WordPress par défaut"
+	},
+	"overlayOptionUsual": {
+	  "message": "Mon choix habituel ($USUALPATH$)",
+	  "description": "Option de l'overlay : la proposition par défaut configurée",
+	  "placeholders": {
+		"usualpath": {
+		  "content": "$1"
+		}
+	  }
+	},
+	"overlayOptionCustom": {
+	  "message": "Personnalisé",
+	  "description": "Option de l'overlay : chemin personnalisé"
+	},
+	"overlayCustomPlaceholder": {
+	  "message": "/mon-acces-secret/",
+	  "description": "Placeholder du champ personnalisé de l'overlay"
+	},
+	"overlayOptionNone": {
+	  "message": "Ne pas rediriger sur ce site",
+	  "description": "Option de l'overlay : ne jamais rediriger"
+	},
+	"overlaySubmit": {
+	  "message": "Valider et y aller",
+	  "description": "Bouton de validation de l'overlay"
+	},
+	"overlayCancel": {
+	  "message": "Annuler",
+	  "description": "Bouton d'annulation de l'overlay"
+	},
+	"overlayHelp": {
+	  "message": "Modifiable ensuite dans les réglages de l'extension.",
+	  "description": "Ligne d'aide de l'overlay"
 	}
 }

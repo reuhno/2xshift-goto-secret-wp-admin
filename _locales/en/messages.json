@@ -6,30 +6,14 @@
   "extensionDesc": {
 	  "message": " Redirects to a hidden WordPress login page when double pressing Shift keyboard key.",
 	  "description": "Description of the extension"
-	},  
+	},
   "welcomeMessage": {
-	"message": "Welcome to 2xShift Goto secret wp-admin! Please set your default admin URL prefix. <br>You can also add exceptions to change the URL on certain websites",
+	"message": "Welcome to 2xShift Goto secret wp-admin! On a WordPress site where you are not logged in, double-pressing Shift offers to remember the admin access for that site.",
 	"description": "Welcome message for the options page"
   },
-  "textException": {
-  "message": "You can also add exceptions to change the URL on some sites.",
-  "description": "Welcome message explaining the exceptions"
-  },
- "helperException": {
- "message": "Enter the full domain (e.g. https://www.example.com) and admin URL for each exception.",
- "description": "Explanation of how to enter the exception domain"
- },
   "adminUrlLabel": {
-	"message": "Default Admin URL:",
-	"description": "Label for the admin URL input"
-  },
-  "exceptionsLabel": {
-	"message": "Exceptions",
-	"description": "Label for the exceptions section"
-  },
-  "addExceptionButton": {
-	"message": "Add Exception",
-	"description": "Button to add a new exception"
+	"message": "Default proposal:",
+	"description": "Label for the admin URL input, used as the default proposal on new sites"
   },
   "saveButton": {
 	"message": "Save",
@@ -41,7 +25,7 @@
   },
   "deleteButton": {
 	"message": "Delete",
-	"description": "Button to delete an exception"
+	"description": "Button to delete a remembered site"
   },
   "explainations": {
   "message": "In order to avoid unexpected redirection to a site that would require pressing the Shift key several times quickly, the script detects whether the site we are browsing is a WordPress site by checking for the presence of wp-content wp-includes or wp-admin strings in the source code of the page.",
@@ -50,5 +34,103 @@
   "debugLabel": {
 	"message": "Debug: write logs to the console",
 	"description": "Label for the debug checkbox"
+  },
+  "askOnNewSitesLabel": {
+	"message": "Ask on every new site",
+	"description": "Label for the askOnNewSites checkbox"
+  },
+  "askOnNewSitesHelp": {
+	"message": "Unchecked: the default proposal applies without asking.",
+	"description": "Help text for the askOnNewSites checkbox"
+  },
+  "sitesSectionTitle": {
+	"message": "Remembered sites",
+	"description": "Title of the remembered sites section"
+  },
+  "sitesTableHostHeader": {
+	"message": "Host",
+	"description": "Table header for the site host column"
+  },
+  "sitesTablePathHeader": {
+	"message": "Admin path",
+	"description": "Table header for the admin path column"
+  },
+  "sitesTableActionsHeader": {
+	"message": "Actions",
+	"description": "Table header for the actions column"
+  },
+  "sitesNoneMention": {
+	"message": "Do not redirect on this site",
+	"description": "Shown for a site rule with no redirect"
+  },
+  "sitesEmpty": {
+	"message": "No site remembered yet.",
+	"description": "Shown when the remembered sites table is empty"
+  },
+  "sitesAddHostPlaceholder": {
+	"message": "example.com",
+	"description": "Placeholder for the manual add-site host field"
+  },
+  "sitesAddPathPlaceholder": {
+	"message": "/wp-admin/",
+	"description": "Placeholder for the manual add-site path field"
+  },
+  "addSiteButton": {
+	"message": "Add",
+	"description": "Button to manually add a remembered site"
+  },
+  "siteAddedMessage": {
+	"message": "Site saved.",
+	"description": "Confirmation message shown after adding/editing a site"
+  },
+  "siteRemovedMessage": {
+	"message": "Site removed.",
+	"description": "Confirmation message shown after removing a site"
+  },
+  "overlayTitle": {
+	"message": "Remember the admin access for $HOST$?",
+	"description": "Title of the first-use overlay",
+	"placeholders": {
+	  "host": {
+		"content": "$1"
+	  }
+	}
+  },
+  "overlayOptionDefault": {
+	"message": "/wp-admin/",
+	"description": "First-use overlay option: default WordPress admin path"
+  },
+  "overlayOptionUsual": {
+	"message": "My usual choice ($USUALPATH$)",
+	"description": "First-use overlay option: the configured default proposal",
+	"placeholders": {
+	  "usualpath": {
+		"content": "$1"
+	  }
+	}
+  },
+  "overlayOptionCustom": {
+	"message": "Custom",
+	"description": "First-use overlay option: custom path"
+  },
+  "overlayCustomPlaceholder": {
+	"message": "/my-secret-access/",
+	"description": "Placeholder for the first-use overlay custom path field"
+  },
+  "overlayOptionNone": {
+	"message": "Do not redirect on this site",
+	"description": "First-use overlay option: never redirect"
+  },
+  "overlaySubmit": {
+	"message": "Save and go",
+	"description": "Submit button of the first-use overlay"
+  },
+  "overlayCancel": {
+	"message": "Cancel",
+	"description": "Cancel button of the first-use overlay"
+  },
+  "overlayHelp": {
+	"message": "Editable later in the extension's settings.",
+	"description": "Help line of the first-use overlay"
   }
 }
