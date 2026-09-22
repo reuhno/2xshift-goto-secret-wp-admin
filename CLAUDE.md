@@ -11,15 +11,17 @@ Extension Chrome **Manifest V3**, sans build, sans dépendance, sans tests. Nom 
 - Remote `origin` : https://github.com/reuhno/2xshift-goto-secret-wp-admin.
 - Une branche `feature/<slug>` par lot, fusionnée en avance rapide (fast-forward) dans `main`.
 - `git push` réservé au propriétaire (Renaud) : un agent ne pousse pas de lui-même.
+- `tools/` (comme tout dossier non chargé par Chrome) est à **exclure du zip envoyé au Chrome Web Store** : seuls les fichiers réellement utilisés par l'extension (manifest, scripts, HTML, `_locales/`, `icons/`) doivent y figurer.
 
 ## Développement
 
 - Chargée dans Chrome **directement depuis ce dossier** (« Charger l'extension non empaquetée », profil Default). Après toute modification : `chrome://extensions` → bouton ↻ de l'extension. Une page ouverte doit être rechargée pour recevoir le nouveau `content.js`.
 - Journaux : sous l'option **Debug** de la page de réglages (case à cocher, `chrome.storage.sync.debug`). Rien ne s'écrit dans la console tant qu'elle n'est pas cochée. Le `console.log` de `content.js` est dans la console de la page ; celui de `background.js` dans « Inspecter les vues : service worker » sur `chrome://extensions`.
-- Incrémenter `"version"` dans `manifest.json` à chaque modification livrée (SemVer, actuellement 1.3.0).
+- Incrémenter `"version"` dans `manifest.json` à chaque modification livrée (SemVer, actuellement 1.3.1).
 - Les libellés visibles passent par `_locales/{en,fr}/messages.json` (`__MSG_x__` dans le manifeste, `chrome.i18n.getMessage` dans `options.js`, `popup.js` et dans `content.js` pour l'overlay). Toute nouvelle chaîne s'ajoute **dans les deux langues**.
 - Page de réglages en onglet plein : `manifest.json` déclare `options_ui: { page: "options.html", open_in_tab: true }` — écran « complet », conteneur centré `max-width: 760px`, cartes. Un clic sur l'icône de la barre d'outils ouvre le **popup** (`action.default_popup: "popup.html"`, écran « quotidien », 360 px de large) ; son lien « Tous les réglages » appelle `chrome.runtime.openOptionsPage()`. Plus de `chrome.action.onClicked` (incompatible avec un `default_popup`).
 - `popup.html` / `popup.js` et `options.html` partagent l'habillage `ui.css` (variables de couleur, composants boutons/champs, mode sombre via `prefers-color-scheme`). Les deux pages protègent leurs appels `chrome.*` par `typeof chrome !== 'undefined' && chrome.storage` en tête de script, pour rester inspectables hors extension (ouverture `file://` ou serveur statique) : sans l'API, le HTML garde son balisage de secours (état représentatif, libellés en dur en français) et le script ne fait rien de plus.
+- **Contraste (WCAG)** : cibles **4,5:1 pour tout texte** (y compris les liens) **/ 3:1 pour les bordures de contrôles, l'anneau de focus et les icônes**. Après toute modification des variables de couleur de `ui.css`, relancer `node tools/contraste.js` (mesure les paires texte/fond et bordure/fond des deux modes, clair et sombre) et corriger jusqu'à ce que tout passe.
 
 ## Modèle de stockage (`chrome.storage.sync`)
 

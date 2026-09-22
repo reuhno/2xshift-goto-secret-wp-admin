@@ -2,33 +2,44 @@
 
 :root {
 	--accent: #2f6fdb;
-	--danger: #c62828;
+	/* Fond du bouton principal : couleur fixe, volontairement distincte de
+	   --accent en mode sombre (--accent y devient plus clair pour rester
+	   lisible en texte de lien sur fond sombre — un fond de bouton n'a pas
+	   cette contrainte et peut rester la même teinte saturée dans les deux
+	   modes, cf. tools/contraste.js paire 6). Non redéfinie dans les blocs
+	   sombres : elle hérite donc de cette valeur unique. */
+	--accent-button: #2f6fdb;
+	--danger: #b3261e;
 	--text: #1f2933;
 	--muted: #5f6b76;
 	--border-card: #e3e3e3;
-	--border-field: #cfd4da;
+	--border-field: #8a949e;
 	--bg: #f5f6f8;
 	--card-bg: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
 	:root:not([data-theme="light"]) {
-		--text: #e6e9ec;
-		--muted: #9aa4ae;
+		--accent: #8ab4f8;
+		--danger: #f28b82;
+		--text: #e8ebee;
+		--muted: #aab4be;
 		--border-card: #3a414a;
-		--border-field: #3a414a;
-		--bg: #1e2227;
-		--card-bg: #272c33;
+		--border-field: #6b7784;
+		--bg: #1b1f24;
+		--card-bg: #262b32;
 	}
 }
 
 :root[data-theme="dark"] {
-	--text: #e6e9ec;
-	--muted: #9aa4ae;
+	--accent: #8ab4f8;
+	--danger: #f28b82;
+	--text: #e8ebee;
+	--muted: #aab4be;
 	--border-card: #3a414a;
-	--border-field: #3a414a;
-	--bg: #1e2227;
-	--card-bg: #272c33;
+	--border-field: #6b7784;
+	--bg: #1b1f24;
+	--card-bg: #262b32;
 }
 
 * {
@@ -121,7 +132,7 @@ button {
 }
 
 .btn-primary {
-	background: var(--accent);
+	background: var(--accent-button);
 	color: #fff;
 	border: none;
 	border-radius: 6px;

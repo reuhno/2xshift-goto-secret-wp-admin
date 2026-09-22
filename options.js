@@ -81,14 +81,42 @@ document.addEventListener('DOMContentLoaded', () => {
 		const row = clone.querySelector('.site-row');
 		const hostCell = clone.querySelector('.site-host');
 		const pathCell = clone.querySelector('.site-path');
+		const openButton = clone.querySelector('.site-open-btn');
 		const removeButton = clone.querySelector('.remove-site');
 
 		hostCell.textContent = host;
-		removeButton.innerText = chrome.i18n.getMessage('deleteButton');
+
+		const openLabel = chrome.i18n.getMessage('openAdminAction');
+		openButton.setAttribute('aria-label', openLabel);
+		openButton.title = openLabel;
+
+		const deleteLabel = chrome.i18n.getMessage('deleteSiteAction');
+		removeButton.setAttribute('aria-label', deleteLabel);
+		removeButton.title = deleteLabel;
 
 		const path = rule && rule.path !== undefined ? rule.path : null;
 
-		renderPathCell(pathCell, host, path);
+		renderPathCell(pathCell, host, path, openButton);
+
+		// Lit le champ chemin de LA LIGNE au moment du clic (pas une valeur
+		// figée à la construction) : la cellule est reconstruite par
+		// renderPathCell/renderPathInput à chaque bascule, donc on interroge
+		// pathCell plutôt que de garder une référence à un <input> périmé.
+		openButton.addEventListener('click', () => {
+			if (openButton.getAttribute('aria-disabled') === 'true') {
+				return;
+			}
+			const input = pathCell.querySelector('input[type="text"]');
+			if (!input) {
+				return;
+			}
+			const raw = input.value.trim();
+			if (!raw) {
+				return;
+			}
+			const normalized = normalizePath(raw);
+			chrome.tabs.create({ url: `https://${host}${normalized}` });
+		});
 
 		removeButton.addEventListener('click', () => {
 			chrome.storage.sync.remove(SITE_PREFIX + host, () => {
@@ -103,11 +131,23 @@ document.addEventListener('DOMContentLoaded', () => {
 		sitesList.appendChild(clone);
 	}
 
+	// Active/désactive le bouton « ouvrir » selon l'état de la ligne : absent
+	// de fonction (pas de handler actif) quand path === null (« Ne pas
+	// rediriger »), actif sinon. Appelé à chaque (re)rendu de la cellule
+	// chemin pour rester synchronisé avec la bascule mention <-> champ texte.
+	function syncOpenButtonState(openButton, path) {
+		if (!openButton) {
+			return;
+		}
+		openButton.setAttribute('aria-disabled', path === null ? 'true' : 'false');
+	}
+
 	// Rend le contenu de la cellule « Chemin d'admin » : soit un champ texte
 	// (règle avec chemin), soit la mention « Ne pas rediriger » + un lien
 	// « Définir un chemin » qui transforme la mention en champ texte.
-	function renderPathCell(pathCell, host, path) {
+	function renderPathCell(pathCell, host, path, openButton) {
 		pathCell.innerHTML = '';
+		syncOpenButtonState(openButton, path);
 
 		if (path === null) {
 			const mention = document.createElement('span');
@@ -119,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			defineLink.className = 'btn-text define-path-link';
 			defineLink.innerText = chrome.i18n.getMessage('sitesDefinePathLink');
 			defineLink.addEventListener('click', () => {
-				renderPathInput(pathCell, host, '', true);
+				renderPathInput(pathCell, host, '', true, openButton);
 			});
 
 			pathCell.appendChild(mention);
@@ -128,11 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 
-		renderPathInput(pathCell, host, path, false);
+		renderPathInput(pathCell, host, path, false, openButton);
 	}
 
-	function renderPathInput(pathCell, host, path, wasNone) {
+	function renderPathInput(pathCell, host, path, wasNone, openButton) {
 		pathCell.innerHTML = '';
+		syncOpenButtonState(openButton, path);
 
 		const pathInput = document.createElement('input');
 		pathInput.type = 'text';
@@ -145,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (wasNone) {
 					// Laissé vide après « Définir un chemin » : on revient à
 					// la mention, sans rien enregistrer.
-					renderPathCell(pathCell, host, null);
+					renderPathCell(pathCell, host, null, openButton);
 				} else {
 					pathInput.value = path;
 				}

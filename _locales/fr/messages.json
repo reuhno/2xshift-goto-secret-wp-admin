@@ -23,10 +23,6 @@
 	"message": "Options enregistrées.",
 	"description": "Message de confirmation affiché après l'enregistrement des options"
   },
-  "deleteButton": {
-	  "message": "Supprimer",
-	  "description": "Bouton pour supprimer un site mémorisé"
-	},
    "explainations": {
 	  "message": "Afin de ne pas faire de redirection inopinée sur un site qui nécessiterait d'appuyer plusieurs fois sur la touche Shift rapidement, le script détecte si le site surlequel nous naviguons est un bien site WordPress en vérifiant la présence de chaines wp-content wp-includes ou wp-admin dans le code source de la page.",
 	  "description": "Explications sur le fonctionnement du script"
@@ -136,6 +132,14 @@
 	"sitesDefinePathLink": {
 	  "message": "Définir un chemin",
 	  "description": "Lien qui transforme la mention « Ne pas rediriger » en champ chemin modifiable"
+	},
+	"deleteSiteAction": {
+	  "message": "Supprimer ce site",
+	  "description": "aria-label/title du bouton-icône corbeille qui supprime un site mémorisé"
+	},
+	"openAdminAction": {
+	  "message": "Ouvrir la page d'admin dans un nouvel onglet",
+	  "description": "aria-label/title du bouton-icône qui ouvre l'URL d'admin du site dans un nouvel onglet"
 	},
 	"optionsFonctionnementTitle": {
 	  "message": "Fonctionnement",

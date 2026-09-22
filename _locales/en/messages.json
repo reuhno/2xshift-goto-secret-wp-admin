@@ -23,10 +23,6 @@
 	"message": "Options saved.",
 	"description": "Confirmation message shown after saving options"
   },
-  "deleteButton": {
-	"message": "Delete",
-	"description": "Button to delete a remembered site"
-  },
   "explainations": {
   "message": "In order to avoid unexpected redirection to a site that would require pressing the Shift key several times quickly, the script detects whether the site we are browsing is a WordPress site by checking for the presence of wp-content wp-includes or wp-admin strings in the source code of the page.",
   "description": "Explanations of how the script works"
@@ -136,6 +132,14 @@
   "sitesDefinePathLink": {
 	"message": "Set a path",
 	"description": "Link that turns the 'no redirect' mention into an editable path field"
+  },
+  "deleteSiteAction": {
+	"message": "Remove this site",
+	"description": "aria-label/title of the trash icon button that removes a remembered site"
+  },
+  "openAdminAction": {
+	"message": "Open the admin page in a new tab",
+	"description": "aria-label/title of the icon button that opens the site's admin URL in a new tab"
   },
   "optionsFonctionnementTitle": {
 	"message": "How it works",

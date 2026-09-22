@@ -77,6 +77,43 @@ document.addEventListener('DOMContentLoaded', () => {
 		}, 1500);
 	}
 
+	// État "règle active" : texte courant (--text) + chemin en gras, plutôt
+	// que le --muted par défaut de .popup-state. stateEl.textContent était du
+	// texte brut ; on reconstruit en DOM en repérant la sous-chaîne exacte du
+	// chemin dans le message résolu par chrome.i18n.getMessage (elle y a été
+	// injectée via le placeholder $PATH$), pour l'entourer d'un <span> sans
+	// ajouter de nouvelle clé de traduction.
+	function setStateText(message) {
+		stateEl.classList.remove('popup-state--active');
+		stateEl.textContent = message;
+	}
+
+	function setStateActive(fullMessage, pathValue) {
+		stateEl.classList.add('popup-state--active');
+		stateEl.textContent = '';
+
+		const index = fullMessage.indexOf(pathValue);
+		if (index === -1) {
+			// Repli : coupe impossible (ne devrait pas arriver), texte brut.
+			stateEl.appendChild(document.createTextNode(fullMessage));
+			return;
+		}
+
+		const before = fullMessage.slice(0, index);
+		const after = fullMessage.slice(index + pathValue.length);
+
+		if (before) {
+			stateEl.appendChild(document.createTextNode(before));
+		}
+		const pathSpan = document.createElement('span');
+		pathSpan.className = 'popup-state-path';
+		pathSpan.textContent = pathValue;
+		stateEl.appendChild(pathSpan);
+		if (after) {
+			stateEl.appendChild(document.createTextNode(after));
+		}
+	}
+
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		const tab = tabs && tabs[0];
 
@@ -104,19 +141,19 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (rule && rule.path !== undefined) {
 					forgetButton.style.display = '';
 					if (rule.path === null) {
-						stateEl.textContent = chrome.i18n.getMessage('sitesNoneMention');
+						setStateText(chrome.i18n.getMessage('sitesNoneMention'));
 						pathInput.value = defaultProposal || '/wp-admin/';
 					} else {
-						stateEl.textContent = chrome.i18n.getMessage('popupRuleActive', [rule.path]);
+						setStateActive(chrome.i18n.getMessage('popupRuleActive', [rule.path]), rule.path);
 						pathInput.value = rule.path;
 					}
 				} else {
 					forgetButton.style.display = 'none';
 					if (defaultProposal) {
-						stateEl.textContent = chrome.i18n.getMessage('popupRuleSuggested', [defaultProposal]);
+						setStateText(chrome.i18n.getMessage('popupRuleSuggested', [defaultProposal]));
 						pathInput.value = defaultProposal;
 					} else {
-						stateEl.textContent = chrome.i18n.getMessage('popupRuleNoSuggestion');
+						setStateText(chrome.i18n.getMessage('popupRuleNoSuggestion'));
 						pathInput.value = '/wp-admin/';
 					}
 				}
