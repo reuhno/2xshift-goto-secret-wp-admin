@@ -75,12 +75,31 @@
       color: var(--muted);
       margin-bottom: 12px;
     }
+    .popup-permission-warning {
+      background: var(--bg);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .popup-permission-warning p {
+      margin: 0 0 8px;
+    }
+    .popup-permission-warning button {
+      width: 100%;
+    }
   </style>
 </head>
 <body>
   <div class="popup-header">
     <img src="icons/icon16.png" alt="">
     <span class="ext-name" id="popup-ext-name">2xShift Goto secret wp-admin</span>
+  </div>
+
+  <div id="popup-permission-warning" class="popup-permission-warning" hidden>
+    <p id="popup-permission-warning-text">L'extension n'est pas encore autorisée sur tous les sites : le double Shift reste inactif tant que l'accès n'est pas accordé.</p>
+    <button type="button" class="btn-secondary" id="popup-permission-button">Autoriser sur tous les sites</button>
   </div>
 
   <p id="popup-no-site" style="display: none;">Aucun site sur cet onglet</p>

@@ -205,6 +205,22 @@
 	  "message": "Fermer cet onglet",
 	  "description": "Bouton de fermeture de l'onglet de l'état terminé de l'assistant"
 	},
+	"onboardingPermissionWarning": {
+	  "message": "Firefox n'a pas encore autorisé l'extension sur les sites : sans cet accord, le double Shift reste inactif. Vous pouvez l'accorder à tout moment depuis le popup de l'extension.",
+	  "description": "Avertissement affiché dans l'assistant (Firefox) quand l'accès <all_urls> a été refusé"
+	},
+	"onboardingPermissionRetry": {
+	  "message": "Autoriser l'accès",
+	  "description": "Bouton de l'assistant qui relance la demande d'accès à tous les sites"
+	},
+	"popupPermissionWarning": {
+	  "message": "L'extension n'est pas encore autorisée sur tous les sites : le double Shift reste inactif tant que l'accès n'est pas accordé.",
+	  "description": "Avertissement affiché en haut du popup (Firefox) quand l'accès <all_urls> n'est pas accordé"
+	},
+	"popupPermissionButton": {
+	  "message": "Autoriser sur tous les sites",
+	  "description": "Bouton du popup qui demande l'accès à tous les sites"
+	},
 	"popupNoHttpSite": {
 	  "message": "Aucun site sur cet onglet",
 	  "description": "Message du popup quand l'onglet actif n'est pas une page http(s)"

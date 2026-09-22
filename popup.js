@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const hasChrome = typeof chrome !== 'undefined' && !!chrome.storage;
 
 	const extNameEl = document.getElementById('popup-ext-name');
+	const permissionWarningEl = document.getElementById('popup-permission-warning');
+	const permissionWarningTextEl = document.getElementById('popup-permission-warning-text');
+	const permissionButtonEl = document.getElementById('popup-permission-button');
 	const noSiteEl = document.getElementById('popup-no-site');
 	const mainEl = document.getElementById('popup-main');
 	const hostEl = document.getElementById('popup-host');
@@ -34,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		disableButton.textContent = chrome.i18n.getMessage('sitesNoneMention');
 		forgetButton.textContent = chrome.i18n.getMessage('popupForgetSite');
 		settingsLink.textContent = chrome.i18n.getMessage('popupSettingsLink');
+		permissionWarningTextEl.textContent = chrome.i18n.getMessage('popupPermissionWarning');
+		permissionButtonEl.textContent = chrome.i18n.getMessage('popupPermissionButton');
 	}
 
 	settingsLink.addEventListener('click', (event) => {
@@ -50,6 +55,58 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (!hasChrome) {
 		return;
 	}
+
+	// Garde d'accès aux sites (Firefox MV3) : <all_urls> n'y est pas accordé
+	// d'office, contrairement à Chrome où host_permissions accorde déjà
+	// tout — l'encart n'apparaît donc jamais sur Chrome. Sans cet accord,
+	// content.js ne s'injecte pas et le double Shift reste inactif ; ce
+	// popup est l'endroit indiqué par l'assistant pour le rattraper.
+	function checkAllUrlsPermission() {
+		try {
+			if (typeof browser !== 'undefined' && browser.permissions && browser.permissions.contains) {
+				return browser.permissions.contains({ origins: ['<all_urls>'] })
+					.then((has) => !!has)
+					.catch(() => true);
+			}
+			return new Promise((resolve) => {
+				chrome.permissions.contains({ origins: ['<all_urls>'] }, (has) => {
+					resolve(!!has);
+				});
+			}).catch(() => true);
+		} catch (error) {
+			return Promise.resolve(true);
+		}
+	}
+
+	// Forme promesse (API native `browser.*` de Firefox) avec repli en
+	// callbacks (`chrome.*`, seule forme disponible sur Chrome) ; toute
+	// exception vaut accord, pour ne jamais bloquer Chrome.
+	function requestAllUrlsPermission() {
+		try {
+			if (typeof browser !== 'undefined' && browser.permissions && browser.permissions.request) {
+				return browser.permissions.request({ origins: ['<all_urls>'] })
+					.then((granted) => !!granted)
+					.catch(() => true);
+			}
+			return new Promise((resolve) => {
+				chrome.permissions.request({ origins: ['<all_urls>'] }, (granted) => {
+					resolve(!!granted);
+				});
+			}).catch(() => true);
+		} catch (error) {
+			return Promise.resolve(true);
+		}
+	}
+
+	checkAllUrlsPermission().then((has) => {
+		permissionWarningEl.hidden = has;
+	});
+
+	permissionButtonEl.addEventListener('click', () => {
+		requestAllUrlsPermission().then((granted) => {
+			permissionWarningEl.hidden = granted;
+		});
+	});
 
 	const SITE_PREFIX = 'site:';
 

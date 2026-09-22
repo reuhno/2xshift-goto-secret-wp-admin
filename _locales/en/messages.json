@@ -205,6 +205,22 @@
 	"message": "Close this tab",
 	"description": "Close button of the assistant's completed state"
   },
+  "onboardingPermissionWarning": {
+	"message": "Firefox hasn't authorized the extension on sites yet: without this consent, double-tapping Shift stays inactive. You can grant it any time from the extension's popup.",
+	"description": "Warning shown in the assistant (Firefox) when the <all_urls> access was denied"
+  },
+  "onboardingPermissionRetry": {
+	"message": "Grant access",
+	"description": "Assistant button that re-requests access to all sites"
+  },
+  "popupPermissionWarning": {
+	"message": "The extension isn't authorized on all sites yet: double-tapping Shift stays inactive until access is granted.",
+	"description": "Warning shown at the top of the popup (Firefox) when the <all_urls> access isn't granted"
+  },
+  "popupPermissionButton": {
+	"message": "Allow on all sites",
+	"description": "Popup button that requests access to all sites"
+  },
   "popupNoHttpSite": {
 	"message": "No site on this tab",
 	"description": "Popup message shown when the active tab is not an http(s) page"

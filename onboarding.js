@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const advancedLink = document.getElementById('onboarding-advanced-link');
 	const closeButton = document.getElementById('onboarding-close');
 	const doneAddress = document.getElementById('onboarding-done-address');
+	const permissionWarning = document.getElementById('onboarding-permission-warning');
+	const permissionWarningText = document.getElementById('onboarding-permission-warning-text');
+	const permissionRetryButton = document.getElementById('onboarding-permission-retry');
 
 	if (hasChrome) {
 		document.documentElement.lang = chrome.i18n.getUILanguage();
@@ -29,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('onboarding-done-title').innerText = chrome.i18n.getMessage('onboardingDoneTitle');
 		document.getElementById('onboarding-done-text').innerText = chrome.i18n.getMessage('onboardingDoneText');
 		closeButton.innerText = chrome.i18n.getMessage('onboardingCloseTab');
+		permissionWarningText.innerText = chrome.i18n.getMessage('onboardingPermissionWarning');
+		permissionRetryButton.innerText = chrome.i18n.getMessage('onboardingPermissionRetry');
 	}
 
 	// Hors extension (aperçu navigateur) : pas d'API chrome.* disponible, on
@@ -55,16 +60,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const normalized = normalizePath(pathInput.value);
 
-		chrome.storage.sync.set({ adminUrl: normalized }, () => {
-			doneAddress.textContent = normalized;
-			stepForm.hidden = true;
-			stepDone.hidden = false;
+		// Sur Firefox (MV3), <all_urls> n'est pas accordé d'office : sans cet
+		// accord, content.js ne s'injecte pas et le double Shift ne fait
+		// rien. Sur Chrome, host_permissions accorde déjà tout : l'appel
+		// répond `true` sans dialogue. adminUrl est enregistrée dans tous
+		// les cas, y compris en cas de refus.
+		requestAllUrlsPermission().then((granted) => {
+			chrome.storage.sync.set({ adminUrl: normalized }, () => {
+				doneAddress.textContent = normalized;
+				stepForm.hidden = true;
+				stepDone.hidden = false;
+				permissionWarning.hidden = granted;
+			});
+		});
+	});
+
+	permissionRetryButton.addEventListener('click', () => {
+		requestAllUrlsPermission().then((granted) => {
+			permissionWarning.hidden = granted;
 		});
 	});
 
 	closeButton.addEventListener('click', () => {
 		window.close();
 	});
+
+	// Demande l'accès à tous les sites. Forme promesse (API native `browser.*`
+	// de Firefox) avec repli en callbacks (`chrome.*`, seule forme disponible
+	// sur Chrome) ; toute exception est traitée comme un accord, pour ne
+	// jamais bloquer Chrome où l'origine est de toute façon déjà accordée via
+	// host_permissions.
+	function requestAllUrlsPermission() {
+		try {
+			if (typeof browser !== 'undefined' && browser.permissions && browser.permissions.request) {
+				return browser.permissions.request({ origins: ['<all_urls>'] })
+					.then((granted) => !!granted)
+					.catch(() => true);
+			}
+			return new Promise((resolve) => {
+				chrome.permissions.request({ origins: ['<all_urls>'] }, (granted) => {
+					resolve(!!granted);
+				});
+			}).catch(() => true);
+		} catch (error) {
+			return Promise.resolve(true);
+		}
+	}
 
 	// Trim, garantit un "/" initial, réduit une URL complète à son pathname,
 	// vide -> /wp-admin/.
