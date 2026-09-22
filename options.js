@@ -1,22 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-	document.documentElement.lang = chrome.i18n.getUILanguage();
+	const hasChrome = typeof chrome !== 'undefined' && !!chrome.storage;
 
-	document.getElementById('welcome-text').innerText = chrome.i18n.getMessage("welcomeMessage");
-	document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
-	document.getElementById('ask-on-new-sites-label').innerText = chrome.i18n.getMessage("askOnNewSitesLabel");
-	document.getElementById('ask-on-new-sites-help').innerText = chrome.i18n.getMessage("askOnNewSitesHelp");
-	document.getElementById('save-button').innerText = chrome.i18n.getMessage("saveButton");
-	document.getElementById('explainations').innerText = chrome.i18n.getMessage("explainations");
-	document.getElementById('debug-label').innerText = chrome.i18n.getMessage("debugLabel");
-	document.getElementById('sites-section-title').innerText = chrome.i18n.getMessage("sitesSectionTitle");
-	document.getElementById('sites-table-host-header').innerText = chrome.i18n.getMessage("sitesTableHostHeader");
-	document.getElementById('sites-table-path-header').innerText = chrome.i18n.getMessage("sitesTablePathHeader");
-	document.getElementById('sites-table-actions-header').innerText = chrome.i18n.getMessage("sitesTableActionsHeader");
-	document.getElementById('sites-empty').innerText = chrome.i18n.getMessage("sitesEmpty");
-	document.getElementById('add-site-host').placeholder = chrome.i18n.getMessage("sitesAddHostPlaceholder");
-	document.getElementById('add-site-path').placeholder = chrome.i18n.getMessage("sitesAddPathPlaceholder");
-	document.getElementById('add-site-button').innerText = chrome.i18n.getMessage("addSiteButton");
+	if (hasChrome) {
+		document.documentElement.lang = chrome.i18n.getUILanguage();
+
+		document.getElementById('page-title').innerText = chrome.i18n.getMessage("extensionName");
+		document.getElementById('fonctionnement-title').innerText = chrome.i18n.getMessage("optionsFonctionnementTitle");
+		document.getElementById('fonctionnement-p1').innerText = chrome.i18n.getMessage("optionsFonctionnementP1");
+		document.getElementById('fonctionnement-p2').innerText = chrome.i18n.getMessage("optionsFonctionnementP2");
+		document.getElementById('explainations').innerText = chrome.i18n.getMessage("explainations");
+		document.getElementById('reglages-title').innerText = chrome.i18n.getMessage("optionsReglagesTitle");
+		document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
+		document.getElementById('ask-on-new-sites-label').innerText = chrome.i18n.getMessage("askOnNewSitesLabel");
+		document.getElementById('ask-on-new-sites-help').innerText = chrome.i18n.getMessage("askOnNewSitesHelp");
+		document.getElementById('save-button').innerText = chrome.i18n.getMessage("saveButton");
+		document.getElementById('debug-label').innerText = chrome.i18n.getMessage("debugLabel");
+		document.getElementById('sites-section-title').innerText = chrome.i18n.getMessage("sitesSectionTitle");
+		document.getElementById('sites-table-host-header').innerText = chrome.i18n.getMessage("sitesTableHostHeader");
+		document.getElementById('sites-table-path-header').innerText = chrome.i18n.getMessage("sitesTablePathHeader");
+		document.getElementById('sites-table-actions-header').innerText = chrome.i18n.getMessage("sitesTableActionsHeader");
+		document.getElementById('sites-empty').innerText = chrome.i18n.getMessage("sitesEmpty");
+		document.getElementById('add-site-host').placeholder = chrome.i18n.getMessage("sitesAddHostPlaceholder");
+		document.getElementById('add-site-path').placeholder = chrome.i18n.getMessage("sitesAddPathPlaceholder");
+		document.getElementById('add-site-button').innerText = chrome.i18n.getMessage("addSiteButton");
+		document.getElementById('credits-title').innerText = chrome.i18n.getMessage("optionsCreditsTitle");
+		document.getElementById('credits-made-by').innerHTML = chrome.i18n.getMessage("creditsMadeBy");
+		document.getElementById('credits-coffee').innerHTML = chrome.i18n.getMessage("creditsCoffee");
+	}
 
 	const form = document.getElementById('options-form');
 	const adminUrlInput = document.getElementById('admin-url');
@@ -30,6 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	const addSiteHostInput = document.getElementById('add-site-host');
 	const addSitePathInput = document.getElementById('add-site-path');
 	const addSiteButton = document.getElementById('add-site-button');
+
+	// Hors extension (aperçu navigateur) : pas d'API chrome.* disponible, on
+	// laisse le balisage de secours (état vide, libellés en dur en français).
+	if (!hasChrome) {
+		return;
+	}
 
 	const SITE_PREFIX = 'site:';
 
@@ -71,29 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const path = rule && rule.path !== undefined ? rule.path : null;
 
-		if (path === null) {
-			const mention = document.createElement('span');
-			mention.className = 'site-none-mention';
-			mention.textContent = chrome.i18n.getMessage('sitesNoneMention');
-			pathCell.appendChild(mention);
-		} else {
-			const pathInput = document.createElement('input');
-			pathInput.type = 'text';
-			pathInput.value = path;
-			pathInput.addEventListener('change', () => {
-				const raw = pathInput.value.trim();
-				if (!raw) {
-					pathInput.value = path;
-					return;
-				}
-				const normalized = normalizePath(raw);
-				chrome.storage.sync.set({ [SITE_PREFIX + host]: { path: normalized } }, () => {
-					pathInput.value = normalized;
-					showSitesStatus(chrome.i18n.getMessage('siteAddedMessage'));
-				});
-			});
-			pathCell.appendChild(pathInput);
-		}
+		renderPathCell(pathCell, host, path);
 
 		removeButton.addEventListener('click', () => {
 			chrome.storage.sync.remove(SITE_PREFIX + host, () => {
@@ -106,6 +101,70 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 
 		sitesList.appendChild(clone);
+	}
+
+	// Rend le contenu de la cellule « Chemin d'admin » : soit un champ texte
+	// (règle avec chemin), soit la mention « Ne pas rediriger » + un lien
+	// « Définir un chemin » qui transforme la mention en champ texte.
+	function renderPathCell(pathCell, host, path) {
+		pathCell.innerHTML = '';
+
+		if (path === null) {
+			const mention = document.createElement('span');
+			mention.className = 'site-none-mention';
+			mention.textContent = chrome.i18n.getMessage('sitesNoneMention');
+
+			const defineLink = document.createElement('button');
+			defineLink.type = 'button';
+			defineLink.className = 'btn-text define-path-link';
+			defineLink.innerText = chrome.i18n.getMessage('sitesDefinePathLink');
+			defineLink.addEventListener('click', () => {
+				renderPathInput(pathCell, host, '', true);
+			});
+
+			pathCell.appendChild(mention);
+			pathCell.appendChild(document.createTextNode(' '));
+			pathCell.appendChild(defineLink);
+			return;
+		}
+
+		renderPathInput(pathCell, host, path, false);
+	}
+
+	function renderPathInput(pathCell, host, path, wasNone) {
+		pathCell.innerHTML = '';
+
+		const pathInput = document.createElement('input');
+		pathInput.type = 'text';
+		pathInput.value = path;
+		pathInput.placeholder = chrome.i18n.getMessage('sitesAddPathPlaceholder');
+
+		pathInput.addEventListener('change', () => {
+			const raw = pathInput.value.trim();
+			if (!raw) {
+				if (wasNone) {
+					// Laissé vide après « Définir un chemin » : on revient à
+					// la mention, sans rien enregistrer.
+					renderPathCell(pathCell, host, null);
+				} else {
+					pathInput.value = path;
+				}
+				return;
+			}
+			const normalized = normalizePath(raw);
+			chrome.storage.sync.set({ [SITE_PREFIX + host]: { path: normalized } }, () => {
+				path = normalized;
+				wasNone = false;
+				pathInput.value = normalized;
+				showSitesStatus(chrome.i18n.getMessage('siteAddedMessage'));
+			});
+		});
+
+		pathCell.appendChild(pathInput);
+
+		if (wasNone) {
+			pathInput.focus();
+		}
 	}
 
 	// Mirrors background.js's normalizeHost(): lowercase hostname, "www." stripped.

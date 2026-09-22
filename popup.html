@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>2xShift Goto secret wp-admin</title>
+  <link rel="stylesheet" href="ui.css">
+  <style>
+    body {
+      width: 360px;
+      padding: 16px;
+    }
+    .popup-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .popup-header img {
+      width: 16px;
+      height: 16px;
+    }
+    .popup-header .ext-name {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .popup-host {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    .popup-state {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .popup-field-label {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    #popup-path {
+      margin-bottom: 12px;
+    }
+    .popup-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .popup-actions button {
+      flex: 1;
+    }
+    .popup-links {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .popup-footer {
+      border-top: 1px solid var(--border-card);
+      margin-top: 12px;
+      padding-top: 8px;
+      text-align: center;
+    }
+    .popup-footer a {
+      font-size: 13px;
+    }
+    #popup-no-site {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup-header">
+    <img src="icons/icon16.png" alt="">
+    <span class="ext-name" id="popup-ext-name">2xShift Goto secret wp-admin</span>
+  </div>
+
+  <p id="popup-no-site" style="display: none;">Aucun site sur cet onglet</p>
+
+  <div id="popup-main">
+    <p class="popup-host" id="popup-host">exemple.com</p>
+    <p class="popup-state" id="popup-state">Aucune règle. Proposition : /wp-admin/</p>
+
+    <label class="popup-field-label" id="popup-path-label" for="popup-path">Chemin d'admin</label>
+    <input type="text" id="popup-path" value="/wp-admin/" placeholder="/wp-admin/">
+
+    <div class="popup-actions">
+      <button type="button" class="btn-primary" id="popup-save">Enregistrer pour ce site</button>
+      <button type="button" class="btn-secondary" id="popup-go">Y aller maintenant</button>
+    </div>
+
+    <div class="popup-links">
+      <button type="button" class="btn-text" id="popup-disable">Ne pas rediriger sur ce site</button>
+      <button type="button" class="btn-text danger" id="popup-forget" style="display: none;">Oublier ce site</button>
+    </div>
+
+    <p class="status-line" id="popup-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="popup-footer">
+    <a href="#" id="popup-settings-link">Tous les réglages</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -132,5 +132,83 @@
 	"overlayHelp": {
 	  "message": "Modifiable ensuite dans les réglages de l'extension.",
 	  "description": "Ligne d'aide de l'overlay"
+	},
+	"sitesDefinePathLink": {
+	  "message": "Définir un chemin",
+	  "description": "Lien qui transforme la mention « Ne pas rediriger » en champ chemin modifiable"
+	},
+	"optionsFonctionnementTitle": {
+	  "message": "Fonctionnement",
+	  "description": "Titre de la section « Fonctionnement » de la page de réglages"
+	},
+	"optionsFonctionnementP1": {
+	  "message": "Un double appui sur la touche Shift (moins de 275 ms) redirige vers l'accès admin caché d'un site WordPress ; la règle utilisée est mémorisée par hôte, avec une proposition par défaut pour les nouveaux sites.",
+	  "description": "Première phrase de la section « Fonctionnement » de la page de réglages"
+	},
+	"optionsFonctionnementP2": {
+	  "message": "Si un cookie de connexion WordPress est présent, aucune redirection n'a lieu : rester connecté suffit à ne jamais déclencher la redirection par erreur.",
+	  "description": "Deuxième phrase de la section « Fonctionnement » de la page de réglages"
+	},
+	"optionsReglagesTitle": {
+	  "message": "Réglages",
+	  "description": "Titre de la section « Réglages » de la page de réglages"
+	},
+	"optionsCreditsTitle": {
+	  "message": "Crédits",
+	  "description": "Titre de la section « Crédits » de la page de réglages"
+	},
+	"popupNoHttpSite": {
+	  "message": "Aucun site sur cet onglet",
+	  "description": "Message du popup quand l'onglet actif n'est pas une page http(s)"
+	},
+	"popupPathLabel": {
+	  "message": "Chemin d'admin",
+	  "description": "Libellé du champ chemin du popup"
+	},
+	"popupSaveForSite": {
+	  "message": "Enregistrer pour ce site",
+	  "description": "Bouton principal du popup : enregistrer la règle pour le site courant"
+	},
+	"popupGoNow": {
+	  "message": "Y aller maintenant",
+	  "description": "Bouton secondaire du popup : rediriger immédiatement sans enregistrer"
+	},
+	"popupForgetSite": {
+	  "message": "Oublier ce site",
+	  "description": "Lien du popup : supprimer la règle mémorisée pour le site courant"
+	},
+	"popupSettingsLink": {
+	  "message": "Tous les réglages",
+	  "description": "Lien de pied de popup vers la page de réglages complète"
+	},
+	"popupRuleActive": {
+	  "message": "Règle : $PATH$",
+	  "description": "Ligne d'état du popup quand une règle de redirection existe pour le site courant",
+	  "placeholders": {
+		"path": {
+		  "content": "$1"
+		}
+	  }
+	},
+	"popupRuleSuggested": {
+	  "message": "Aucune règle. Proposition : $PATH$",
+	  "description": "Ligne d'état du popup quand il n'y a pas de règle mais une proposition par défaut existe",
+	  "placeholders": {
+		"path": {
+		  "content": "$1"
+		}
+	  }
+	},
+	"popupRuleNoSuggestion": {
+	  "message": "Aucune règle, aucune proposition par défaut",
+	  "description": "Ligne d'état du popup quand il n'y a ni règle ni proposition par défaut"
+	},
+	"creditsMadeBy": {
+	  "message": "Créé par <a href=\"https://www.reuhno.fr/\" target=\"_blank\" rel=\"noopener\">Renaud Pacouil</a> pour l'agence web La Boîte à Re.",
+	  "description": "Crédits de la page de réglages : ligne auteur (contient un lien HTML brut, injecté via innerHTML)"
+	},
+	"creditsCoffee": {
+	  "message": "<a href=\"https://ko-fi.com/reuhno\" target=\"_blank\" rel=\"noopener\">Offrez-moi un café</a> si ça vous rend service",
+	  "description": "Crédits de la page de réglages : ligne ko-fi (contient un lien HTML brut, injecté via innerHTML)"
 	}
 }

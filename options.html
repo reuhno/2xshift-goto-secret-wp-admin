@@ -2,135 +2,60 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>2xShift Goto secret wp-admin Options</title>
+  <title>2xShift Goto secret wp-admin — Réglages</title>
+  <link rel="stylesheet" href="ui.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      color: #333;
-      margin: 0;
-      padding: 12px;
-      max-width: 100%;
-      box-sizing: border-box;
+    .options-container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 16px;
     }
-    h1, h2 {
-      color: #4CAF50;
-    }
-    form, .sites-section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      box-sizing: border-box;
-    }
-    .sites-section {
-      margin-top: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-    input[type="text"] {
-      width: calc(100% - 20px);
-      padding: 10px;
-      margin-bottom: 20px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    button {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #45a049;
-    }
-    button[type="submit"] {
-      background: #4c7aaf;
-    }
-    button[type="submit"]:hover {
-      background: #365a83;
-    }
-    .checkbox-field {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-    .checkbox-field label {
-      margin-bottom: 0;
-      font-weight: normal;
-    }
-    .welcome-message {
-      background: #e7f4e4;
-      padding: 15px;
-      border: 1px solid #c4e6c3;
-      border-radius: 5px;
-      margin-bottom: 20px;
-    }
-    .helper-text {
-      font-size: 0.9em;
-      color: #666;
-      margin: 0 0 16px 26px;
-    }
-    .credits {
-      margin-top: 20px;
-      padding: 15px;
-      background: #fff;
-      border-top: 1px solid #ddd;
-    }
-    .credits a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-    .credits a:hover {
-      text-decoration: underline;
+    .options-container > h1 {
+      font-size: 22px;
+      margin: 0 0 20px;
     }
     #sites-table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       margin-bottom: 16px;
     }
     #sites-table th {
       text-align: left;
-      font-size: 0.85em;
-      color: #666;
-      padding: 6px 8px;
-      border-bottom: 2px solid #eee;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 8px;
+      border-bottom: 2px solid var(--border-card);
     }
     #sites-table td {
-      padding: 6px 8px;
-      border-bottom: 1px solid #eee;
+      padding: 8px;
+      border-bottom: 1px solid var(--border-card);
       vertical-align: middle;
     }
+    #sites-table th:nth-child(1),
     #sites-table td.site-host {
-      font-family: monospace;
+      width: 40%;
+      font-family: ui-monospace, monospace;
+      font-size: 14px;
+      word-break: break-all;
     }
-    #sites-table td input[type="text"] {
+    #sites-table th:nth-child(3),
+    #sites-table td.site-actions {
+      width: 100px;
+      text-align: right;
+    }
+    #sites-table td.site-path input[type="text"] {
       width: 100%;
       margin: 0;
-      padding: 6px 8px;
+      height: 36px;
     }
-    #sites-table .site-none-mention {
-      color: #666;
+    .site-none-mention {
+      color: var(--muted);
       font-style: italic;
     }
-    #sites-table .remove-site {
-      background: #f44336;
-      padding: 6px 12px;
-      font-size: 14px;
-    }
-    #sites-table .remove-site:hover {
-      background: #d32f2f;
-    }
     #sites-empty {
-      color: #666;
+      color: var(--muted);
       font-style: italic;
       margin: 0 0 16px;
     }
@@ -143,64 +68,76 @@
       margin: 0;
       flex: 1;
     }
+    .credits p {
+      font-size: 13px;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
-  <h1>Options</h1>
-  <div class="welcome-message">
-    <p id="welcome-text"></p>
-  </div>
-  <form id="options-form">
-    <label id="admin-url-label" for="admin-url">Proposition par défaut :</label>
-    <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/">
-    <div class="checkbox-field">
-      <input type="checkbox" id="ask-on-new-sites" name="ask-on-new-sites">
-      <label id="ask-on-new-sites-label" for="ask-on-new-sites">Demander sur chaque nouveau site</label>
-    </div>
-    <p id="ask-on-new-sites-help" class="helper-text"></p>
-    <div class="checkbox-field">
-      <input type="checkbox" id="debug" name="debug">
-      <label id="debug-label" for="debug">Debug : écrire les journaux dans la console</label>
-    </div>
-    <button type="submit" id="save-button">Enregistrer</button>
-    <p id="save-status" role="status" aria-live="polite"></p>
-  </form>
+  <div class="options-container">
+    <h1 id="page-title">2xShift Goto secret wp-admin</h1>
 
-  <div class="sites-section">
-    <h2 id="sites-section-title">Sites mémorisés</h2>
-    <table id="sites-table">
-      <thead>
-        <tr>
-          <th id="sites-table-host-header"></th>
-          <th id="sites-table-path-header"></th>
-          <th id="sites-table-actions-header"></th>
-        </tr>
-      </thead>
-      <tbody id="sites-list"></tbody>
-    </table>
-    <p id="sites-empty" style="display: none;"></p>
-    <div class="add-site-row">
-      <input type="text" id="add-site-host" placeholder="exemple.com">
-      <input type="text" id="add-site-path" placeholder="/wp-admin/">
-      <button type="button" id="add-site-button">Ajouter</button>
-    </div>
-    <p id="sites-status" role="status" aria-live="polite"></p>
+    <section class="card">
+      <h2 id="fonctionnement-title">Fonctionnement</h2>
+      <p id="fonctionnement-p1">Un double appui sur la touche Shift (moins de 275 ms) redirige vers l'accès admin caché d'un site WordPress ; la règle utilisée est mémorisée par hôte, avec une proposition par défaut pour les nouveaux sites.</p>
+      <p id="fonctionnement-p2">Si un cookie de connexion WordPress est présent, aucune redirection n'a lieu : rester connecté suffit à ne jamais déclencher la redirection par erreur.</p>
+      <p id="explainations">Afin de ne pas faire de redirection inopinée sur un site qui nécessiterait d'appuyer plusieurs fois sur la touche Shift rapidement, le script détecte si le site sur lequel nous naviguons est bien un site WordPress en vérifiant la présence de chaines wp-content wp-includes ou wp-admin dans le code source de la page.</p>
+    </section>
+
+    <form id="options-form" class="card">
+      <h2 id="reglages-title">Réglages</h2>
+      <label id="admin-url-label" for="admin-url">Proposition par défaut :</label>
+      <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/">
+      <div class="checkbox-field">
+        <input type="checkbox" id="ask-on-new-sites" name="ask-on-new-sites">
+        <label id="ask-on-new-sites-label" for="ask-on-new-sites">Demander sur chaque nouveau site</label>
+      </div>
+      <p id="ask-on-new-sites-help" class="helper-text">Décochée : la proposition par défaut s'applique sans demander.</p>
+      <div class="checkbox-field">
+        <input type="checkbox" id="debug" name="debug">
+        <label id="debug-label" for="debug">Debug : écrire les journaux dans la console</label>
+      </div>
+      <br>
+      <button type="submit" id="save-button" class="btn-primary">Enregistrer</button>
+      <p id="save-status" class="status-line" role="status" aria-live="polite"></p>
+    </form>
+
+    <section class="card sites-section">
+      <h2 id="sites-section-title">Sites mémorisés</h2>
+      <table id="sites-table">
+        <thead>
+          <tr>
+            <th id="sites-table-host-header"></th>
+            <th id="sites-table-path-header"></th>
+            <th id="sites-table-actions-header"></th>
+          </tr>
+        </thead>
+        <tbody id="sites-list"></tbody>
+      </table>
+      <p id="sites-empty">Aucun site mémorisé pour l'instant.</p>
+      <div class="add-site-row">
+        <input type="text" id="add-site-host" placeholder="exemple.com">
+        <input type="text" id="add-site-path" placeholder="/wp-admin/">
+        <button type="button" id="add-site-button" class="btn-secondary">Ajouter</button>
+      </div>
+      <p id="sites-status" class="status-line" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="card credits">
+      <h2 id="credits-title">Crédits</h2>
+      <p id="credits-made-by">Créé par <a href="https://www.reuhno.fr/" target="_blank" rel="noopener">Renaud Pacouil</a> pour l'agence web La Boîte à Re.</p>
+      <p id="credits-coffee"><a href="https://ko-fi.com/reuhno" target="_blank" rel="noopener">Offrez-moi un café</a> si ça vous rend service</p>
+    </section>
   </div>
 
   <template id="site-row-template">
     <tr class="site-row">
       <td class="site-host"></td>
       <td class="site-path"></td>
-      <td><button type="button" class="remove-site">Supprimer</button></td>
+      <td class="site-actions"><button type="button" class="remove-site btn-text danger">Supprimer</button></td>
     </tr>
   </template>
-
-  <div class="credits">
-    <p id="explainations"></p>
-    <br/>
-    <p>Développé avec méthodologie <a target="_blank" href="https://www.la-rache.com/">La RACHE</a> par <a href="https://www.reuhno.fr/" target="_blank">Renaud Pacouil</a> et ChatGPT.</p>
-    <p><a href="https://ko-fi.com/reuhno" target="_blank">Offrez-moi un café</a> si ça vous rend service</p>
-  </div>
 
   <script src="options.js"></script>
  </body>

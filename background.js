@@ -3,7 +3,13 @@
 // (page WordPress, utilisateur pas visiblement connecté) et envoie
 // checkCookiesAndRedirect ; ce script vérifie les cookies, résout la règle du
 // site (stockée par hôte) et redirige, ou demande à l'utilisateur via
-// l'overlay du content script (message askSiteRule / saveSiteRule).
+// l'overlay du content script (message askSiteRule / saveSiteRule). Le popup
+// de l'icône (popup.js) passe par le même service worker pour la lecture/
+// écriture des règles (chrome.storage direct) et pour la redirection
+// immédiate (message goToAdmin, avec tabId/url explicites car sender.tab est
+// absent depuis un popup). Le clic sur l'icône ouvre ce popup (default_popup
+// dans le manifest) : plus de chrome.action.onClicked ici, incompatible avec
+// un popup.
 
 let debugEnabled = false;
 
@@ -24,10 +30,6 @@ chrome.runtime.onInstalled.addListener((details) => {
 	if (details.reason !== "install") {
 		return;
 	}
-	chrome.runtime.openOptionsPage();
-});
-
-chrome.action.onClicked.addListener(() => {
 	chrome.runtime.openOptionsPage();
 });
 
@@ -129,6 +131,21 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 	}
 }
 
+// Redirection immédiate demandée depuis le popup (« Y aller maintenant »).
+// Contrairement à saveSiteRule/checkCookiesAndRedirect, ce message ne vient
+// pas d'un content script : sender.tab est absent, tabId et url sont donc
+// transmis explicitement par popup.js.
+async function handleGoToAdmin(message) {
+	const { path, tabId, url } = message;
+
+	if (!tabId || !url) {
+		log("goToAdmin sans tabId/url, ignoré.");
+		return;
+	}
+
+	redirectToAdmin(url, path, tabId);
+}
+
 async function handleSaveSiteRule(message, sender) {
 	const { host, path, redirect } = message;
 
@@ -151,6 +168,10 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 	} else if (message.action === "saveSiteRule") {
 		handleSaveSiteRule(message, sender).catch((error) => {
 			log('Error saving site rule:', error);
+		});
+	} else if (message.action === "goToAdmin") {
+		handleGoToAdmin(message).catch((error) => {
+			log('Error handling goToAdmin:', error);
 		});
 	}
 });

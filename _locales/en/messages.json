@@ -132,5 +132,83 @@
   "overlayHelp": {
 	"message": "Editable later in the extension's settings.",
 	"description": "Help line of the first-use overlay"
+  },
+  "sitesDefinePathLink": {
+	"message": "Set a path",
+	"description": "Link that turns the 'no redirect' mention into an editable path field"
+  },
+  "optionsFonctionnementTitle": {
+	"message": "How it works",
+	"description": "Title of the options page 'how it works' section"
+  },
+  "optionsFonctionnementP1": {
+	"message": "A quick double press of the Shift key (under 275 ms) redirects to a WordPress site's hidden admin access; the rule used is remembered per host, with a default proposal for new sites.",
+	"description": "First sentence of the options page 'how it works' section"
+  },
+  "optionsFonctionnementP2": {
+	"message": "If a WordPress login cookie is present, no redirect happens: staying logged in is enough to never trigger the redirect by mistake.",
+	"description": "Second sentence of the options page 'how it works' section"
+  },
+  "optionsReglagesTitle": {
+	"message": "Settings",
+	"description": "Title of the options page settings section"
+  },
+  "optionsCreditsTitle": {
+	"message": "Credits",
+	"description": "Title of the options page credits section"
+  },
+  "popupNoHttpSite": {
+	"message": "No site on this tab",
+	"description": "Popup message shown when the active tab is not an http(s) page"
+  },
+  "popupPathLabel": {
+	"message": "Admin path",
+	"description": "Label of the popup's path field"
+  },
+  "popupSaveForSite": {
+	"message": "Save for this site",
+	"description": "Popup primary button: save the rule for the current site"
+  },
+  "popupGoNow": {
+	"message": "Go now",
+	"description": "Popup secondary button: redirect immediately without saving"
+  },
+  "popupForgetSite": {
+	"message": "Forget this site",
+	"description": "Popup link: delete the stored rule for the current site"
+  },
+  "popupSettingsLink": {
+	"message": "All settings",
+	"description": "Popup footer link to the full options page"
+  },
+  "popupRuleActive": {
+	"message": "Rule: $PATH$",
+	"description": "Popup state line when a redirect rule exists for the current site",
+	"placeholders": {
+	  "path": {
+		"content": "$1"
+	  }
+	}
+  },
+  "popupRuleSuggested": {
+	"message": "No rule. Suggestion: $PATH$",
+	"description": "Popup state line when there is no rule but a default proposal exists",
+	"placeholders": {
+	  "path": {
+		"content": "$1"
+	  }
+	}
+  },
+  "popupRuleNoSuggestion": {
+	"message": "No rule, no default suggestion",
+	"description": "Popup state line when there is no rule and no default proposal"
+  },
+  "creditsMadeBy": {
+	"message": "Created by <a href=\"https://www.reuhno.fr/\" target=\"_blank\" rel=\"noopener\">Renaud Pacouil</a> for the web agency La Boîte à Re.",
+	"description": "Options page credits: author line (contains a raw HTML link, injected via innerHTML)"
+  },
+  "creditsCoffee": {
+	"message": "<a href=\"https://ko-fi.com/reuhno\" target=\"_blank\" rel=\"noopener\">Buy me a coffee</a> if this helps you",
+	"description": "Options page credits: ko-fi line (contains a raw HTML link, injected via innerHTML)"
   }
 }
