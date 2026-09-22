@@ -1,0 +1,48 @@
+{
+  "extensionName": {
+	"message": "2xShift Goto secret wp-admin",
+	"description": "Le nom de l'extension"
+  },
+  "extensionDesc": {
+  "message": " Redirige vers une page de connexion WordPress cachée lorsque l'on appuie deux fois sur la touche Shift du clavier.",
+  "description": "Description de l'extension"
+  },
+  "welcomeMessage": {
+	"message": "Bienvenue sur 2xShift Goto secret wp-admin ! Veuillez définir votre préfixe d'URL d'administration par défaut.",
+	"description": "Message de bienvenue pour la page d'options"
+  },
+  "textException": {
+	  "message": "Vous pouvez également ajouter des exceptions pour changer l'URL sur certains sites.",
+	  "description": "Message de bienvenue expliquant les exceptions"
+	},
+	"helperException": {
+	  "message": "Entrez le domaine complet (par exemple, https://www.example.com) et l'URL d'admin pour chaque exception.",
+	  "description": "Explication sur la saisie du domaine d’exception"
+	},
+  "adminUrlLabel": {
+	"message": "URL Admin par Défaut :",
+	"description": "Label pour l'input de l'URL d'admin"
+  },
+  "exceptionsLabel": {
+	"message": "Exceptions",
+	"description": "Label pour la section des exceptions"
+  },
+  "addExceptionButton": {
+	"message": "Ajouter une Exception",
+	"description": "Bouton pour ajouter une nouvelle exception"
+  },
+  "saveButton": {
+	"message": "Enregistrer",
+	"description": "Bouton pour enregistrer les options"
+  },
+  "deleteButton": {
+	  "message": "Supprimer",
+	  "description": "Bouton pour supprimer une ligne d’exception"
+	},
+   "explainations": {
+	  "message": "Afin de ne pas faire de redirection inopinée sur un site qui nécessiterait d'appuyer plusieurs fois sur la touche Shift rapidement, le script détecte si le site surlequel nous naviguons est un bien site WordPress en vérifiant la présence de chaines wp-content wp-includes ou wp-admin dans le code source de la page.",
+	  "description": "Explications sur le fonctionnement du script"
+    }
+	
+	
+}

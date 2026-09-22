@@ -1,0 +1,46 @@
+{
+  "extensionName": {
+	"message": "2xShift Goto secret wp-admin",
+	"description": "The name of the extension"
+  },
+  "extensionDesc": {
+	  "message": " Redirects to a hidden WordPress login page when double pressing Shift keyboard key.",
+	  "description": "Description of the extension"
+	},  
+  "welcomeMessage": {
+	"message": "Welcome to 2xShift Goto secret wp-admin! Please set your default admin URL prefix. <br>You can also add exceptions to change the URL on certain websites",
+	"description": "Welcome message for the options page"
+  },
+  "textException": {
+  "message": "You can also add exceptions to change the URL on some sites.",
+  "description": "Welcome message explaining the exceptions"
+  },
+ "helperException": {
+ "message": "Enter the full domain (e.g. https://www.example.com) and admin URL for each exception.",
+ "description": "Explanation of how to enter the exception domain"
+ },
+  "adminUrlLabel": {
+	"message": "Default Admin URL:",
+	"description": "Label for the admin URL input"
+  },
+  "exceptionsLabel": {
+	"message": "Exceptions",
+	"description": "Label for the exceptions section"
+  },
+  "addExceptionButton": {
+	"message": "Add Exception",
+	"description": "Button to add a new exception"
+  },
+  "saveButton": {
+	"message": "Save",
+	"description": "Button to save options"
+  },
+  "deleteButton": {
+	"message": "Delete",
+	"description": "Button to delete an exception"
+  },
+  "explainations": {
+  "message": "In order to avoid unexpected redirection to a site that would require pressing the Shift key several times quickly, the script detects whether the site we are browsing is a WordPress site by checking for the presence of wp-content wp-includes or wp-admin strings in the source code of the page.",
+  "description": "Explanations of how the script works"
+  }
+}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>"2xShift Goto secret wp-admin Options</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      max-width: 600px;
+    }
+    h1, h2 {
+      color: #4CAF50;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input[type="text"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    button[type="submit"] {
+      background: #4c7aaf;
+    }
+    button[type="submit"]:hover {
+      background: #365a83;
+    }
+    .exception {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .exception input {
+      flex: 1;
+      margin-right: 10px;
+    }
+    .remove-exception {
+      font-size: 14px;
+      padding-left: 5px;
+      padding-right: 5px;
+      margin: 0 10px 0 0;
+      background: #f44336;
+    }
+    .remove-exception:hover {
+      background: #d32f2f;
+    }
+    .welcome-message {
+      background: #e7f4e4;
+      padding: 15px;
+      border: 1px solid #c4e6c3;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .helper-text {
+      font-size: 0.9em;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .credits {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-top: 1px solid #ddd;
+    }
+    .credits a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    .credits a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Options</h1>
+  <div class="welcome-message">
+    <p id="welcome-text"></p>
+    <p id="text-exception"></p>
+  
+  </div>
+  <form id="options-form">
+    <label id="admin-url-label" for="admin-url">URL d'admin par défaut :</label>
+    <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/" required>
+    <h2>Exceptions</h2>
+    <p id="helperException" class="helper-text">Entrez le domaine complet (par exemple, https://www.example.com) et l'URL d'admin pour chaque exception.</p>
+    <div id="exceptions-list"></div>
+    <button type="button" id="add-exception">Ajouter une exception</button>
+    <button type="submit" id="save-button">Enregistrer</button>
+  </form>
+
+  <template id="exception-template">
+    <div class="exception">
+      <button type="button" class="remove-exception">Supprimer</button>
+      <input type="text" class="exception-url" placeholder="https://www.example.com" required>
+      <input type="text" class="exception-admin-url" placeholder="/autre-admin-secret/" required>
+     
+    </div>
+  </template>
+  
+  
+
+  <div class="credits">
+    <p id="explainations"></p>
+    
+    <br/>
+    <p>Développé avec méthodologie <a target="_blank" href="https://www.la-rache.com/">La RACHE</a> par <a href="https://www.reuhno.fr/" target="_blank">Renaud Pacouil</a> et ChatGPT.</p>
+    <p><a href="https://ko-fi.com/reuhno" target="_blank">Offrez-moi un café</a> si ça vous rend service</p>
+  </div>
+
+  <script src="options.js"></script>
+  
+ </body>
+</html>
