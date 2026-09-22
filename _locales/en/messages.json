@@ -46,5 +46,9 @@
   "explainations": {
   "message": "In order to avoid unexpected redirection to a site that would require pressing the Shift key several times quickly, the script detects whether the site we are browsing is a WordPress site by checking for the presence of wp-content wp-includes or wp-admin strings in the source code of the page.",
   "description": "Explanations of how the script works"
+  },
+  "debugLabel": {
+	"message": "Debug: write logs to the console",
+	"description": "Label for the debug checkbox"
   }
 }

@@ -1,113 +1,102 @@
-// Fonction pour vérifier si le texte est présent dans les balises <head>, <script> ou <style>
-const containsWordPressSignatures = (element) => {
-  const wpSignatures = ['wp-json', 'admin-ajax.php', 'wp-content/plugins', 'wp-includes/js/dist'];
-  for (let signature of wpSignatures) {
-	if (element.innerHTML.includes(signature)) {
-	  return true;
+// 2xShift Goto secret wp-admin — content script
+// Détection paresseuse : au chargement, on ne fait rien d'autre qu'écouter le
+// clavier. Rien n'est lu dans le DOM tant qu'un double Shift n'a pas eu lieu.
+
+let debugEnabled = null; // null = pas encore lu, sinon booléen mis en cache pour la page
+let pageKind = null; // null = pas encore évalué, 'wp' ou 'other'
+
+const log = (...args) => {
+	if (debugEnabled) {
+		console.log('[2xShift]', ...args);
 	}
-  }
-  return false;
 };
 
-// Vérifier si des traces de WordPress sont présentes dans le code source
-const isWordPressPage = () => {
-  const headContent = document.head.innerHTML;
-  const scripts = document.getElementsByTagName('script');
-  const styles = document.getElementsByTagName('style');
+// Signatures WordPress détectées uniquement par sélecteurs d'attributs
+// (aucune lecture d'innerHTML).
+const WP_SELECTOR = [
+	'link[href*="/wp-content/"]',
+	'link[href*="/wp-includes/"]',
+	'script[src*="/wp-content/"]',
+	'script[src*="/wp-includes/"]',
+	'link[rel="https://api.w.org/"]',
+	'link[href*="/wp-json/"]',
+	'meta[name="generator"][content*="WordPress"]'
+].join(', ');
 
-  // Vérifier les signatures WordPress dans <head>
-  if (containsWordPressSignatures(document.head)) {
-	return true;
-  }
+const isWordPressPage = () => document.querySelector(WP_SELECTOR) !== null;
 
-  // Vérifier les signatures WordPress dans <script>
-  for (let script of scripts) {
-	if (containsWordPressSignatures(script)) {
-	  return true;
-	}
-  }
-
-  // Vérifier les signatures WordPress dans <style>
-  for (let style of styles) {
-	if (containsWordPressSignatures(style)) {
-	  return true;
-	}
-  }
-
-  // Vérifier la meta tag "generator" pour WordPress
-  if (document.querySelector('meta[name="generator"][content*="WordPress"]') !== null) {
-	return true;
-  }
-
-  return false;
+const isVisiblyLoggedIn = () => {
+	return document.getElementById('wpadminbar') !== null ||
+		document.body.classList.contains('logged-in');
 };
 
-// Vérifier si l'utilisateur est connecté en cherchant des éléments spécifiques aux utilisateurs connectés
-const isLoggedInUser = () => {
-  return document.querySelector('#wpadminbar') !== null ||
-		 document.body.innerHTML.includes('plugins/commandui');
+// Lit le drapeau debug une seule fois (au premier double Shift), puis le met en cache.
+const readDebugFlagOnce = () => {
+	if (debugEnabled !== null) {
+		return Promise.resolve();
+	}
+	return new Promise((resolve) => {
+		try {
+			chrome.storage.sync.get('debug', (data) => {
+				debugEnabled = !!(data && data.debug);
+				resolve();
+			});
+		} catch (error) {
+			debugEnabled = false;
+			resolve();
+		}
+	});
 };
 
-// Fonction pour initialiser l'écouteur keydown
-const initializeKeydownListener = () => {
-  let shiftPressedTime = 0;
+const handleDoubleShift = () => {
+	if (pageKind === null) {
+		pageKind = isWordPressPage() ? 'wp' : 'other';
+		log('Page kind evaluated:', pageKind);
+	}
 
-  document.addEventListener("keydown", (event) => {
+	if (pageKind !== 'wp') {
+		return;
+	}
+
+	if (isVisiblyLoggedIn()) {
+		log('User visibly logged in, no message sent.');
+		return;
+	}
+
+	log('Sending checkCookiesAndRedirect.');
+	chrome.runtime.sendMessage({
+		action: 'checkCookiesAndRedirect',
+		url: window.location.href
+	});
+};
+
+let shiftPressedTime = 0;
+
+document.addEventListener('keydown', (event) => {
 	// Sous Windows, maintenir Shift répète les keydown : ignorer les répétitions
 	// pour ne pas déclencher la redirection en boucle.
 	if (event.repeat) {
-	  return;
+		return;
 	}
 
 	// Ignorer le double Shift si la cible est un champ de saisie.
 	const target = event.target;
 	const isFormField = target && ['input', 'textarea', 'select'].includes(target.tagName ? target.tagName.toLowerCase() : '');
 	if (isFormField || (target && target.isContentEditable)) {
-	  return;
+		return;
 	}
 
-	if (event.key === "Shift") {
-	  const currentTime = new Date().getTime();
+	if (event.key !== 'Shift') {
+		return;
+	}
 
-	  if (currentTime - shiftPressedTime < 275) {
-		chrome.runtime.sendMessage({
-		  action: "checkCookiesAndRedirect",
-		  url: window.location.href
+	const currentTime = new Date().getTime();
+
+	if (currentTime - shiftPressedTime < 275) {
+		readDebugFlagOnce().then(handleDoubleShift).catch((error) => {
+			log('Error handling double Shift:', error);
 		});
-	  }
-
-	  shiftPressedTime = currentTime;
 	}
-  });
-};
 
-// Vérifier si la page est une page WordPress et si l'utilisateur est connecté
-const checkPageAndUserStatus = () => {
-  if (isWordPressPage()) {
-	console.log("This is a WordPress page.");
-	if (!isLoggedInUser()) {
-	  console.log("User is not logged in. Initializing keydown listener.");
-	  initializeKeydownListener();
-	} else {
-	  console.log("User is logged in. Keydown listener not initialized.");
-	}
-  } else {
-	console.log("This is not a WordPress page. Keydown listener not initialized.");
-  }
-};
-
-// Initialiser la vérification de la page et de l'utilisateur
-checkPageAndUserStatus();
-
-// Envoyer un message au script de fond avec le résultat
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'checkIfWordPress') {
-	const isWordPress = isWordPressPage();
-	console.log("Is WordPress page:", isWordPress);
-	sendResponse({ isWordPress });
-  } else if (request.action === 'verifyUserLoggedIn') {
-	const loggedIn = isLoggedInUser();
-	console.log("User is logged in:", loggedIn);
-	sendResponse({ loggedIn });
-  }
+	shiftPressedTime = currentTime;
 });

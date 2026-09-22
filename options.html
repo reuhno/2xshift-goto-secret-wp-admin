@@ -110,6 +110,10 @@
     <h2>Exceptions</h2>
     <p id="helperException" class="helper-text">Entrez le domaine complet (par exemple, https://www.example.com) et l'URL d'admin pour chaque exception.</p>
     <div id="exceptions-list"></div>
+    <div class="debug-field" style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+      <input type="checkbox" id="debug" name="debug">
+      <label id="debug-label" for="debug" style="margin-bottom: 0;">Debug : écrire les journaux dans la console</label>
+    </div>
     <button type="button" id="add-exception">Ajouter une exception</button>
     <button type="submit" id="save-button">Enregistrer</button>
     <p id="save-status" role="status" aria-live="polite"></p>
