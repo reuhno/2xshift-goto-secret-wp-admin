@@ -53,6 +53,19 @@ const initializeKeydownListener = () => {
   let shiftPressedTime = 0;
 
   document.addEventListener("keydown", (event) => {
+	// Sous Windows, maintenir Shift répète les keydown : ignorer les répétitions
+	// pour ne pas déclencher la redirection en boucle.
+	if (event.repeat) {
+	  return;
+	}
+
+	// Ignorer le double Shift si la cible est un champ de saisie.
+	const target = event.target;
+	const isFormField = target && ['input', 'textarea', 'select'].includes(target.tagName ? target.tagName.toLowerCase() : '');
+	if (isFormField || (target && target.isContentEditable)) {
+	  return;
+	}
+
 	if (event.key === "Shift") {
 	  const currentTime = new Date().getTime();
 

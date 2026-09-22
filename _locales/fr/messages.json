@@ -35,6 +35,10 @@
 	"message": "Enregistrer",
 	"description": "Bouton pour enregistrer les options"
   },
+  "savedMessage": {
+	"message": "Options enregistrées.",
+	"description": "Message de confirmation affiché après l'enregistrement des options"
+  },
   "deleteButton": {
 	  "message": "Supprimer",
 	  "description": "Bouton pour supprimer une ligne d’exception"

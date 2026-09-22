@@ -9,10 +9,7 @@ chrome.runtime.onInstalled.addListener((details) => {
   chrome.runtime.openOptionsPage();
 });
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log("Received message:", message);
-
-  if (message.action === "checkCookiesAndRedirect") {
+async function handleCheckCookiesAndRedirect(message, sender) {
 	const { url } = message;
 
 	if (sender.tab && sender.tab.id) {
@@ -49,6 +46,13 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 	} else {
 	  console.error("Invalid tab context.");
 	}
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("Received message:", message);
+
+  if (message.action === "checkCookiesAndRedirect") {
+	handleCheckCookiesAndRedirect(message, sender);
   }
 });
 

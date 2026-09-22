@@ -35,6 +35,10 @@
 	"message": "Save",
 	"description": "Button to save options"
   },
+  "savedMessage": {
+	"message": "Options saved.",
+	"description": "Confirmation message shown after saving options"
+  },
   "deleteButton": {
 	"message": "Delete",
 	"description": "Button to delete an exception"

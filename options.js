@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-	
+
+	document.documentElement.lang = chrome.i18n.getUILanguage();
+
 	document.getElementById('welcome-text').innerText = chrome.i18n.getMessage("welcomeMessage");
 	document.getElementById('text-exception').innerText = chrome.i18n.getMessage("textException");
 	document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
@@ -60,7 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
 	}));
 
 	chrome.storage.sync.set({ adminUrl, exceptions }, () => {
-	  alert('Options enregistrées.');
+	  const saveStatus = document.getElementById('save-status');
+	  saveStatus.textContent = chrome.i18n.getMessage('savedMessage');
+	  setTimeout(() => {
+		saveStatus.textContent = '';
+	  }, 2000);
 	});
   });
 });
