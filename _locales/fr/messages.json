@@ -4,7 +4,7 @@
 	"description": "Le nom de l'extension"
   },
   "extensionDesc": {
-  "message": " Redirige vers une page de connexion WordPress cachée lorsque l'on appuie deux fois sur la touche Shift du clavier.",
+  "message": "Redirige vers une page de connexion WordPress cachée lorsque l'on appuie deux fois sur la touche Shift du clavier.",
   "description": "Description de l'extension"
   },
   "welcomeMessage": {

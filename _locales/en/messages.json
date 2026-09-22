@@ -4,7 +4,7 @@
 	"description": "The name of the extension"
   },
   "extensionDesc": {
-	  "message": " Redirects to a hidden WordPress login page when double pressing Shift keyboard key.",
+	  "message": "Redirects to a hidden WordPress login page when double pressing Shift keyboard key.",
 	  "description": "Description of the extension"
 	},
   "welcomeMessage": {
