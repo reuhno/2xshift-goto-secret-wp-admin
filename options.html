@@ -131,6 +131,14 @@
 
     <form id="options-form" class="card">
       <h2 id="reglages-title">Réglages</h2>
+      <label id="trigger-key-label" for="trigger-key">Touche à appuyer deux fois :</label>
+      <select id="trigger-key" name="trigger-key">
+        <option id="trigger-key-option-shift" value="Shift">Shift</option>
+        <option id="trigger-key-option-control" value="Control">Contrôle (Ctrl)</option>
+        <option id="trigger-key-option-alt" value="Alt">Alt / Option</option>
+        <option id="trigger-key-option-meta" value="Meta">Cmd / Windows</option>
+      </select>
+      <p id="trigger-key-help" class="helper-text">Shift par défaut. Alt seul peut ouvrir le menu du navigateur sous Windows et Linux, et la touche Windows peut ouvrir le menu Démarrer.</p>
       <label id="admin-url-label" for="admin-url">Proposition par défaut :</label>
       <input type="text" id="admin-url" name="admin-url" placeholder="/wp-admin/">
       <div class="checkbox-field">

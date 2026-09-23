@@ -12,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById('explainations').innerText = chrome.i18n.getMessage("explainations");
 		document.getElementById('relaunch-assistant').innerText = chrome.i18n.getMessage("relaunchAssistant");
 		document.getElementById('reglages-title').innerText = chrome.i18n.getMessage("optionsReglagesTitle");
+		document.getElementById('trigger-key-label').innerText = chrome.i18n.getMessage("triggerKeyLabel");
+		document.getElementById('trigger-key-help').innerText = chrome.i18n.getMessage("triggerKeyHelp");
+		document.getElementById('trigger-key-option-shift').innerText = chrome.i18n.getMessage("triggerKeyOptionShift");
+		document.getElementById('trigger-key-option-control').innerText = chrome.i18n.getMessage("triggerKeyOptionControl");
+		document.getElementById('trigger-key-option-alt').innerText = chrome.i18n.getMessage("triggerKeyOptionAlt");
+		document.getElementById('trigger-key-option-meta').innerText = chrome.i18n.getMessage("triggerKeyOptionMeta");
 		document.getElementById('admin-url-label').innerText = chrome.i18n.getMessage("adminUrlLabel");
 		document.getElementById('ask-on-new-sites-label').innerText = chrome.i18n.getMessage("askOnNewSitesLabel");
 		document.getElementById('ask-on-new-sites-help').innerText = chrome.i18n.getMessage("askOnNewSitesHelp");
@@ -34,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	const form = document.getElementById('options-form');
+	const triggerKeySelect = document.getElementById('trigger-key');
 	const adminUrlInput = document.getElementById('admin-url');
 	const askOnNewSitesCheckbox = document.getElementById('ask-on-new-sites');
 	const redirectBackCheckbox = document.getElementById('redirect-back');
@@ -59,8 +66,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const SITE_PREFIX = 'site:';
 
+	const TRIGGER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
+
 	// Load saved options
-	chrome.storage.sync.get(['adminUrl', 'askOnNewSites', 'redirectBack', 'debug'], (data) => {
+	chrome.storage.sync.get(['triggerKey', 'adminUrl', 'askOnNewSites', 'redirectBack', 'debug'], (data) => {
+		triggerKeySelect.value = TRIGGER_KEYS.includes(data.triggerKey) ? data.triggerKey : 'Shift';
 		adminUrlInput.value = data.adminUrl || '';
 		askOnNewSitesCheckbox.checked = data.askOnNewSites !== false;
 		redirectBackCheckbox.checked = data.redirectBack !== false;
@@ -341,12 +351,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	form.addEventListener('submit', (event) => {
 		event.preventDefault();
 
+		const triggerKey = TRIGGER_KEYS.includes(triggerKeySelect.value) ? triggerKeySelect.value : 'Shift';
 		const adminUrl = adminUrlInput.value;
 		const askOnNewSites = !!askOnNewSitesCheckbox.checked;
 		const redirectBack = !!redirectBackCheckbox.checked;
 		const debug = !!debugCheckbox.checked;
 
-		chrome.storage.sync.set({ adminUrl, askOnNewSites, redirectBack, debug }, () => {
+		chrome.storage.sync.set({ triggerKey, adminUrl, askOnNewSites, redirectBack, debug }, () => {
 			const saveStatus = document.getElementById('save-status');
 			saveStatus.textContent = chrome.i18n.getMessage('savedMessage');
 			setTimeout(() => {

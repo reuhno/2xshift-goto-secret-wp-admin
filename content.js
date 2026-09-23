@@ -1,10 +1,14 @@
 // 2xShift Goto secret wp-admin — content script
 // Détection paresseuse : au chargement, on ne fait rien d'autre qu'écouter le
-// clavier. Rien n'est lu dans le DOM tant qu'un double Shift n'a pas eu lieu.
+// clavier. Rien n'est lu (DOM ou stockage) avant le premier appui sur une touche modificatrice.
 
 let debugEnabled = null; // null = pas encore lu, sinon booléen mis en cache pour la page
+let triggerKey = null; // null = pas encore lu ; sinon 'Shift'/'Control'/'Alt'/'Meta' mis en cache pour la page
 let pageKind = null; // null = pas encore évalué, 'wp' ou 'other'
 let overlayOpen = false; // un seul overlay « première utilisation » à la fois
+
+// Touches modificatrices éligibles au double appui (réglage `triggerKey`).
+const MODIFIER_KEYS = ['Shift', 'Control', 'Alt', 'Meta'];
 
 const log = (...args) => {
 	if (debugEnabled) {
@@ -31,19 +35,22 @@ const isVisiblyLoggedIn = () => {
 		document.body.classList.contains('logged-in');
 };
 
-// Lit le drapeau debug une seule fois (au premier double Shift), puis le met en cache.
-const readDebugFlagOnce = () => {
+// Lit le drapeau debug et la touche modificatrice choisie en un seul appel
+// (au premier appui sur une modificatrice), puis les met en cache.
+const readSettingsOnce = () => {
 	if (debugEnabled !== null) {
 		return Promise.resolve();
 	}
 	return new Promise((resolve) => {
 		try {
-			chrome.storage.sync.get('debug', (data) => {
+			chrome.storage.sync.get(['debug', 'triggerKey'], (data) => {
 				debugEnabled = !!(data && data.debug);
+				triggerKey = (data && MODIFIER_KEYS.includes(data.triggerKey)) ? data.triggerKey : 'Shift';
 				resolve();
 			});
 		} catch (error) {
 			debugEnabled = false;
+			triggerKey = 'Shift';
 			resolve();
 		}
 	});
@@ -71,42 +78,49 @@ const handleDoubleShift = () => {
 	});
 };
 
-let shiftPressedTime = 0;
+let lastModifierPress = null; // dernier appui sur une touche modificatrice : { key, time } ou null
 
 document.addEventListener('keydown', (event) => {
-	// Overlay « première utilisation » ouvert : aucun double Shift ne doit
+	// Overlay « première utilisation » ouvert : aucun double appui ne doit
 	// être détecté tant qu'il est là (radios et boutons ne sont pas des
 	// champs de saisie, la garde ci-dessous ne suffit pas à elle seule).
 	if (overlayOpen) {
 		return;
 	}
 
-	// Sous Windows, maintenir Shift répète les keydown : ignorer les répétitions
+	// Sous Windows, maintenir une touche répète les keydown : ignorer les répétitions
 	// pour ne pas déclencher la redirection en boucle.
 	if (event.repeat) {
 		return;
 	}
 
-	// Ignorer le double Shift si la cible est un champ de saisie.
+	// Ignorer le double appui si la cible est un champ de saisie.
 	const target = event.target;
 	const isFormField = target && ['input', 'textarea', 'select'].includes(target.tagName ? target.tagName.toLowerCase() : '');
 	if (isFormField || (target && target.isContentEditable)) {
 		return;
 	}
 
-	if (event.key !== 'Shift') {
+	if (!MODIFIER_KEYS.includes(event.key)) {
 		return;
 	}
 
-	const currentTime = new Date().getTime();
+	// Timestamps capturés de façon synchrone (avant l'attente de la lecture du
+	// stockage) pour ne pas rater le tout premier double appui de la page.
+	const now = Date.now();
+	const previous = lastModifierPress; // { key, time } ou null
+	lastModifierPress = { key: event.key, time: now };
 
-	if (currentTime - shiftPressedTime < 275) {
-		readDebugFlagOnce().then(handleDoubleShift).catch((error) => {
-			log('Error handling double Shift:', error);
-		});
-	}
-
-	shiftPressedTime = currentTime;
+	readSettingsOnce().then(() => {
+		if (event.key !== triggerKey) {
+			return;
+		}
+		if (previous && previous.key === triggerKey && now - previous.time < 275) {
+			handleDoubleShift();
+		}
+	}).catch((error) => {
+		log('Error handling double press:', error);
+	});
 });
 
 // --- Overlay « première utilisation » -------------------------------------

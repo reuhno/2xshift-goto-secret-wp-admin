@@ -11,6 +11,30 @@
 	"message": "Welcome to 2xShift Goto secret wp-admin! On a WordPress site where you are not logged in, double-pressing Shift offers to remember the admin access for that site.",
 	"description": "Welcome message for the options page"
   },
+  "triggerKeyLabel": {
+	"message": "Key to press twice",
+	"description": "Label for the select of the modifier key to press twice"
+  },
+  "triggerKeyHelp": {
+	"message": "Shift by default. Alt alone may open the browser menu on Windows and Linux, and the Windows key may open the Start menu.",
+	"description": "Help text under the modifier key select"
+  },
+  "triggerKeyOptionShift": {
+	"message": "Shift",
+	"description": "Modifier key select option: Shift"
+  },
+  "triggerKeyOptionControl": {
+	"message": "Control (Ctrl)",
+	"description": "Modifier key select option: Control"
+  },
+  "triggerKeyOptionAlt": {
+	"message": "Alt / Option",
+	"description": "Modifier key select option: Alt / Option"
+  },
+  "triggerKeyOptionMeta": {
+	"message": "Cmd / Windows",
+	"description": "Modifier key select option: Cmd / Windows"
+  },
   "adminUrlLabel": {
 	"message": "Default proposal:",
 	"description": "Label for the admin URL input, used as the default proposal on new sites"

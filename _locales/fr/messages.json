@@ -11,6 +11,30 @@
 	"message": "Bienvenue sur 2xShift Goto secret wp-admin ! Sur un site WordPress où vous n'êtes pas connecté, un double appui sur Shift propose de mémoriser l'accès admin de ce site.",
 	"description": "Message de bienvenue pour la page d'options"
   },
+  "triggerKeyLabel": {
+	"message": "Touche à appuyer deux fois",
+	"description": "Label pour le select de la touche modificatrice à appuyer deux fois"
+  },
+  "triggerKeyHelp": {
+	"message": "Shift par défaut. Alt seul peut ouvrir le menu du navigateur sous Windows et Linux, et la touche Windows peut ouvrir le menu Démarrer.",
+	"description": "Texte d'aide sous le select de la touche modificatrice"
+  },
+  "triggerKeyOptionShift": {
+	"message": "Shift",
+	"description": "Option du select de la touche modificatrice : Shift"
+  },
+  "triggerKeyOptionControl": {
+	"message": "Contrôle (Ctrl)",
+	"description": "Option du select de la touche modificatrice : Contrôle"
+  },
+  "triggerKeyOptionAlt": {
+	"message": "Alt / Option",
+	"description": "Option du select de la touche modificatrice : Alt / Option"
+  },
+  "triggerKeyOptionMeta": {
+	"message": "Cmd / Windows",
+	"description": "Option du select de la touche modificatrice : Cmd / Windows"
+  },
   "adminUrlLabel": {
 	"message": "Proposition par défaut :",
 	"description": "Label pour l'input de l'URL d'admin, utilisée comme proposition par défaut sur les nouveaux sites"
