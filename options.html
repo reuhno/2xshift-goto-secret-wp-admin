@@ -35,12 +35,16 @@
     }
     #sites-table th:nth-child(1),
     #sites-table td.site-host {
-      width: 40%;
+      width: 26%;
       font-family: ui-monospace, monospace;
       font-size: 14px;
       word-break: break-all;
     }
     #sites-table th:nth-child(3),
+    #sites-table td.site-redirect-back {
+      width: 190px;
+    }
+    #sites-table th:nth-child(4),
     #sites-table td.site-actions {
       width: 100px;
       text-align: right;
@@ -80,6 +84,11 @@
       pointer-events: none;
     }
     #sites-table td.site-path input[type="text"] {
+      width: 100%;
+      margin: 0;
+      height: 36px;
+    }
+    #sites-table td.site-redirect-back select {
       width: 100%;
       margin: 0;
       height: 36px;
@@ -130,6 +139,11 @@
       </div>
       <p id="ask-on-new-sites-help" class="helper-text">Décochée : la proposition par défaut s'applique sans demander.</p>
       <div class="checkbox-field">
+        <input type="checkbox" id="redirect-back" name="redirect-back" checked>
+        <label id="redirect-back-label" for="redirect-back">Revenir sur la page d'origine après connexion</label>
+      </div>
+      <p id="redirect-back-help" class="helper-text">Ajoute redirect_to à l'adresse de connexion. Peut être modifié site par site.</p>
+      <div class="checkbox-field">
         <input type="checkbox" id="debug" name="debug">
         <label id="debug-label" for="debug">Debug : écrire les journaux dans la console</label>
       </div>
@@ -145,12 +159,136 @@
           <tr>
             <th id="sites-table-host-header"></th>
             <th id="sites-table-path-header"></th>
+            <th id="sites-table-redirect-back-header"></th>
             <th id="sites-table-actions-header"></th>
           </tr>
         </thead>
-        <tbody id="sites-list"></tbody>
+        <!-- Lignes ci-dessous : balisage de secours (aperçu hors extension),
+             une par état du sélecteur « Retour » — remplacées par
+             loadSitesTable() dès que chrome.storage est disponible. -->
+        <tbody id="sites-list">
+          <tr class="site-row">
+            <td class="site-host">exemple.com</td>
+            <td class="site-path"><input type="text" value="/wp-admin/"></td>
+            <td class="site-redirect-back">
+              <select>
+                <option value="" selected>Réglage global</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </td>
+            <td class="site-actions">
+              <button type="button" class="site-open-btn icon-btn" aria-disabled="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+              <button type="button" class="remove-site icon-btn icon-btn--danger">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <line x1="4" y1="7" x2="20" y2="7"></line>
+                  <path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path>
+                  <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          <tr class="site-row">
+            <td class="site-host">client-a.fr</td>
+            <td class="site-path"><input type="text" value="/admin-securisee/"></td>
+            <td class="site-redirect-back">
+              <select>
+                <option value="">Réglage global</option>
+                <option value="true" selected>Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </td>
+            <td class="site-actions">
+              <button type="button" class="site-open-btn icon-btn" aria-disabled="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+              <button type="button" class="remove-site icon-btn icon-btn--danger">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <line x1="4" y1="7" x2="20" y2="7"></line>
+                  <path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path>
+                  <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          <tr class="site-row">
+            <td class="site-host">client-b.fr</td>
+            <td class="site-path"><input type="text" value="/admin-securisee/"></td>
+            <td class="site-redirect-back">
+              <select>
+                <option value="">Réglage global</option>
+                <option value="true">Oui</option>
+                <option value="false" selected>Non</option>
+              </select>
+            </td>
+            <td class="site-actions">
+              <button type="button" class="site-open-btn icon-btn" aria-disabled="false">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+              <button type="button" class="remove-site icon-btn icon-btn--danger">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <line x1="4" y1="7" x2="20" y2="7"></line>
+                  <path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path>
+                  <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+          <tr class="site-row">
+            <td class="site-host">client-c.fr</td>
+            <td class="site-path">
+              <span class="site-none-mention">Ne pas rediriger sur ce site</span>
+              <button type="button" class="btn-text define-path-link">Définir un chemin</button>
+            </td>
+            <td class="site-redirect-back">
+              <select disabled>
+                <option value="" selected>Réglage global</option>
+                <option value="true">Oui</option>
+                <option value="false">Non</option>
+              </select>
+            </td>
+            <td class="site-actions">
+              <button type="button" class="site-open-btn icon-btn" aria-disabled="true">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+              <button type="button" class="remove-site icon-btn icon-btn--danger">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                  <line x1="4" y1="7" x2="20" y2="7"></line>
+                  <path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"></path>
+                  <path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
       </table>
-      <p id="sites-empty">Aucun site mémorisé pour l'instant.</p>
+      <p id="sites-empty" style="display: none;">Aucun site mémorisé pour l'instant.</p>
       <div class="add-site-row">
         <input type="text" id="add-site-host" placeholder="exemple.com">
         <input type="text" id="add-site-path" placeholder="/wp-admin/">
@@ -170,6 +308,13 @@
     <tr class="site-row">
       <td class="site-host"></td>
       <td class="site-path"></td>
+      <td class="site-redirect-back">
+        <select class="site-redirect-back-select">
+          <option value=""></option>
+          <option value="true"></option>
+          <option value="false"></option>
+        </select>
+      </td>
       <td class="site-actions">
         <button type="button" class="site-open-btn icon-btn" aria-disabled="false">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">

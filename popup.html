@@ -48,6 +48,9 @@
     #popup-path {
       margin-bottom: 12px;
     }
+    #popup-redirect-back {
+      margin-bottom: 12px;
+    }
     .popup-actions {
       display: flex;
       gap: 8px;
@@ -110,6 +113,13 @@
 
     <label class="popup-field-label" id="popup-path-label" for="popup-path">Chemin d'admin</label>
     <input type="text" id="popup-path" value="/wp-admin/" placeholder="/wp-admin/">
+
+    <label class="popup-field-label" id="popup-redirect-back-label" for="popup-redirect-back">Retour après connexion</label>
+    <select id="popup-redirect-back">
+      <option value="">Réglage global</option>
+      <option value="true">Oui</option>
+      <option value="false">Non</option>
+    </select>
 
     <div class="popup-actions">
       <button type="button" class="btn-primary" id="popup-save">Enregistrer pour ce site</button>

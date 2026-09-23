@@ -39,6 +39,34 @@
 	"message": "Unchecked: the default proposal applies without asking.",
 	"description": "Help text for the askOnNewSites checkbox"
   },
+  "redirectBackLabel": {
+    "message": "Return to the original page after login",
+    "description": "Label of the redirectBack checkbox (global setting)"
+  },
+  "redirectBackHelp": {
+    "message": "Adds redirect_to to the login address. Can be overridden per site.",
+    "description": "Help text for the redirectBack checkbox"
+  },
+  "sitesTableRedirectBackHeader": {
+    "message": "Return",
+    "description": "Table header for the \"Return\" (redirectBack override) column of the remembered sites table"
+  },
+  "redirectBackOptionGlobal": {
+    "message": "Global setting",
+    "description": "redirectBack override selector option: follow the global setting"
+  },
+  "redirectBackOptionYes": {
+    "message": "Yes",
+    "description": "redirectBack override selector option: return to the original page"
+  },
+  "redirectBackOptionNo": {
+    "message": "No",
+    "description": "redirectBack override selector option: do not return to the original page"
+  },
+  "popupRedirectBackLabel": {
+    "message": "Return after login",
+    "description": "Label of the redirectBack override selector in the popup"
+  },
   "sitesSectionTitle": {
 	"message": "Remembered sites",
 	"description": "Title of the remembered sites section"

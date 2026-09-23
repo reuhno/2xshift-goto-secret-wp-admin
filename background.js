@@ -90,7 +90,7 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 
 		const host = normalizeHost(url);
 		const siteKey = `site:${host}`;
-		const data = await getStorageData(['adminUrl', 'askOnNewSites', 'debug', siteKey]);
+		const data = await getStorageData(['adminUrl', 'askOnNewSites', 'debug', 'redirectBack', siteKey]);
 		debugEnabled = !!data.debug;
 
 		const cookies = await getCookies(url);
@@ -108,7 +108,7 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 				log("Site rule: no redirect for", host);
 				return;
 			}
-			redirectToAdmin(url, siteRule.path, sender.tab.id);
+			redirectToAdmin(url, siteRule.path, sender.tab.id, resolveRedirectBack(data, siteRule));
 			return;
 		}
 
@@ -116,7 +116,7 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 		const adminUrl = data.adminUrl || '';
 
 		if (!askOnNewSites && adminUrl) {
-			redirectToAdmin(url, adminUrl, sender.tab.id);
+			redirectToAdmin(url, adminUrl, sender.tab.id, resolveRedirectBack(data, null));
 			return;
 		}
 
@@ -134,16 +134,22 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 // Redirection immédiate demandée depuis le popup (« Y aller maintenant »).
 // Contrairement à saveSiteRule/checkCookiesAndRedirect, ce message ne vient
 // pas d'un content script : sender.tab est absent, tabId et url sont donc
-// transmis explicitement par popup.js.
+// transmis explicitement par popup.js. `redirectBack` est aussi transmis par
+// popup.js : c'est lui qui affiche la surcharge (le <select> de la ligne) et
+// connaît déjà le réglage global au moment du clic (lu à chaque refresh()),
+// il calcule donc la valeur effective plutôt que de la faire recalculer ici
+// à partir d'une règle qui ne reflète pas forcément le choix affiché (pas
+// encore enregistré). Repli sur true si le message ne le transmet pas
+// (compatibilité, comportement historique).
 async function handleGoToAdmin(message) {
-	const { path, tabId, url } = message;
+	const { path, tabId, url, redirectBack } = message;
 
 	if (!tabId || !url) {
 		log("goToAdmin sans tabId/url, ignoré.");
 		return;
 	}
 
-	redirectToAdmin(url, path, tabId);
+	redirectToAdmin(url, path, tabId, typeof redirectBack === 'boolean' ? redirectBack : true);
 }
 
 async function handleSaveSiteRule(message, sender) {
@@ -158,7 +164,11 @@ async function handleSaveSiteRule(message, sender) {
 	log("Site rule saved for", host, "->", path);
 
 	if (path !== null && redirect && sender.tab && sender.tab.id && sender.tab.url) {
-		redirectToAdmin(sender.tab.url, path, sender.tab.id);
+		// La règle tout juste créée par l'overlay ne porte pas de surcharge
+		// redirectBack (content.js ne le propose pas) : c'est le réglage
+		// global qui s'applique.
+		const data = await getStorageData(['redirectBack']);
+		redirectToAdmin(sender.tab.url, path, sender.tab.id, resolveRedirectBack(data, null));
 	}
 }
 
@@ -176,7 +186,22 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 	}
 });
 
-function redirectToAdmin(url, path, tabId) {
+// Rend la valeur effective de redirectBack : la surcharge de la règle de
+// site (rule.redirectBack) prime si c'est un booléen, sinon le réglage
+// global (stored.redirectBack) si c'est un booléen, sinon true (comportement
+// historique : redirect_to toujours ajouté). `rule` peut être null/undefined
+// (aucune règle de site).
+function resolveRedirectBack(stored, rule) {
+	if (rule && typeof rule.redirectBack === 'boolean') {
+		return rule.redirectBack;
+	}
+	if (stored && typeof stored.redirectBack === 'boolean') {
+		return stored.redirectBack;
+	}
+	return true;
+}
+
+function redirectToAdmin(url, path, tabId, redirectBack) {
 	// `path` peut être un chemin ("/x/") ou une URL complète : dans ce cas on
 	// ne garde que son pathname.
 	let pathname = path;
@@ -190,7 +215,9 @@ function redirectToAdmin(url, path, tabId) {
 
 	const newUrl = new URL(url);
 	newUrl.pathname = pathname;
-	newUrl.searchParams.set('redirect_to', url);
+	if (redirectBack) {
+		newUrl.searchParams.set('redirect_to', url);
+	}
 
 	log("Redirecting to:", newUrl.toString());
 	chrome.tabs.update(tabId, { url: newUrl.toString() });

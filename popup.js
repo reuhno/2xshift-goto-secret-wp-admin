@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const stateEl = document.getElementById('popup-state');
 	const pathLabelEl = document.getElementById('popup-path-label');
 	const pathInput = document.getElementById('popup-path');
+	const redirectBackLabelEl = document.getElementById('popup-redirect-back-label');
+	const redirectBackSelect = document.getElementById('popup-redirect-back');
 	const saveButton = document.getElementById('popup-save');
 	const goButton = document.getElementById('popup-go');
 	const disableButton = document.getElementById('popup-disable');
@@ -32,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		extNameEl.textContent = chrome.i18n.getMessage('extensionName');
 		noSiteEl.textContent = chrome.i18n.getMessage('popupNoHttpSite');
 		pathLabelEl.textContent = chrome.i18n.getMessage('popupPathLabel');
+		redirectBackLabelEl.textContent = chrome.i18n.getMessage('popupRedirectBackLabel');
+		redirectBackSelect.options[0].textContent = chrome.i18n.getMessage('redirectBackOptionGlobal');
+		redirectBackSelect.options[1].textContent = chrome.i18n.getMessage('redirectBackOptionYes');
+		redirectBackSelect.options[2].textContent = chrome.i18n.getMessage('redirectBackOptionNo');
 		saveButton.textContent = chrome.i18n.getMessage('popupSaveForSite');
 		goButton.textContent = chrome.i18n.getMessage('popupGoNow');
 		disableButton.textContent = chrome.i18n.getMessage('sitesNoneMention');
@@ -190,22 +196,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		hostEl.textContent = host;
 
+		// Valeur effective du réglage global redirectBack, mise à jour à
+		// chaque refresh() : sert à calculer le comportement de « Y aller
+		// maintenant » quand le select est sur « Réglage global », sans
+		// avoir à relire le stockage à ce moment-là (mêmes données que
+		// celles déjà affichées).
+		let currentGlobalRedirectBack = true;
+
 		function refresh() {
-			chrome.storage.sync.get(['adminUrl', siteKey], (data) => {
+			chrome.storage.sync.get(['adminUrl', 'redirectBack', siteKey], (data) => {
 				const rule = data[siteKey];
 				const defaultProposal = data.adminUrl || '';
+				currentGlobalRedirectBack = data.redirectBack !== false;
 
 				if (rule && rule.path !== undefined) {
 					forgetButton.style.display = '';
 					if (rule.path === null) {
 						setStateText(chrome.i18n.getMessage('sitesNoneMention'));
 						pathInput.value = defaultProposal || '/wp-admin/';
+						redirectBackSelect.value = '';
+						redirectBackSelect.disabled = true;
 					} else {
 						setStateActive(chrome.i18n.getMessage('popupRuleActive', [rule.path]), rule.path);
 						pathInput.value = rule.path;
+						redirectBackSelect.disabled = false;
+						redirectBackSelect.value = typeof rule.redirectBack === 'boolean' ? String(rule.redirectBack) : '';
 					}
 				} else {
 					forgetButton.style.display = 'none';
+					redirectBackSelect.disabled = false;
+					redirectBackSelect.value = '';
 					if (defaultProposal) {
 						setStateText(chrome.i18n.getMessage('popupRuleSuggested', [defaultProposal]));
 						pathInput.value = defaultProposal;
@@ -226,7 +246,13 @@ document.addEventListener('DOMContentLoaded', () => {
 				return;
 			}
 			const path = normalizePath(raw);
-			chrome.storage.sync.set({ [siteKey]: { path } }, () => {
+			const rule = { path };
+			if (redirectBackSelect.value === 'true') {
+				rule.redirectBack = true;
+			} else if (redirectBackSelect.value === 'false') {
+				rule.redirectBack = false;
+			}
+			chrome.storage.sync.set({ [siteKey]: rule }, () => {
 				pathInput.value = path;
 				showStatus(chrome.i18n.getMessage('siteAddedMessage'));
 				refresh();
@@ -236,7 +262,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		goButton.addEventListener('click', () => {
 			const raw = pathInput.value.trim();
 			const path = raw ? normalizePath(raw) : '/wp-admin/';
-			chrome.runtime.sendMessage({ action: 'goToAdmin', path, tabId, url });
+			// Respecte le choix affiché dans le select sans l'enregistrer :
+			// « Oui »/« Non » l'emportent, « Réglage global » retombe sur la
+			// valeur globale lue au dernier refresh().
+			const redirectBack = redirectBackSelect.value === 'true' ? true
+				: redirectBackSelect.value === 'false' ? false
+				: currentGlobalRedirectBack;
+			chrome.runtime.sendMessage({ action: 'goToAdmin', path, tabId, url, redirectBack });
 			window.close();
 		});
 

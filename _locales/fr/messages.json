@@ -39,6 +39,34 @@
 	  "message": "Décochée : la proposition par défaut s'applique sans demander.",
 	  "description": "Aide de la case à cocher askOnNewSites"
 	},
+	"redirectBackLabel": {
+	  "message": "Revenir sur la page d'origine après connexion",
+	  "description": "Libellé de la case à cocher redirectBack (réglage global)"
+	},
+	"redirectBackHelp": {
+	  "message": "Ajoute redirect_to à l'adresse de connexion. Peut être modifié site par site.",
+	  "description": "Aide de la case à cocher redirectBack"
+	},
+	"sitesTableRedirectBackHeader": {
+	  "message": "Retour",
+	  "description": "En-tête de colonne « Retour » (surcharge redirectBack) du tableau des sites mémorisés"
+	},
+	"redirectBackOptionGlobal": {
+	  "message": "Réglage global",
+	  "description": "Option du sélecteur de surcharge redirectBack : suivre le réglage global"
+	},
+	"redirectBackOptionYes": {
+	  "message": "Oui",
+	  "description": "Option du sélecteur de surcharge redirectBack : revenir sur la page d'origine"
+	},
+	"redirectBackOptionNo": {
+	  "message": "Non",
+	  "description": "Option du sélecteur de surcharge redirectBack : ne pas revenir sur la page d'origine"
+	},
+	"popupRedirectBackLabel": {
+	  "message": "Retour après connexion",
+	  "description": "Libellé du sélecteur de surcharge redirectBack dans le popup"
+	},
 	"sitesSectionTitle": {
 	  "message": "Sites mémorisés",
 	  "description": "Titre de la section des sites mémorisés"
