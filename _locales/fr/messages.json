@@ -319,6 +319,34 @@
 	  "message": "Aucune règle, aucune proposition par défaut",
 	  "description": "Ligne d'état du popup quand il n'y a ni règle ni proposition par défaut"
 	},
+	"popupDiagReload": {
+	  "message": "L'extension n'est pas active sur cet onglet, ouvert avant son dernier rechargement.",
+	  "description": "Diagnostic du popup : content script injoignable sur l'onglet actif"
+	},
+	"popupDiagReloadButton": {
+	  "message": "Recharger la page",
+	  "description": "Bouton du diagnostic du popup qui recharge l'onglet actif"
+	},
+	"popupDiagNotWordPress": {
+	  "message": "Site non détecté comme WordPress : le double appui reste inactif ici.",
+	  "description": "Diagnostic du popup : page non reconnue comme WordPress"
+	},
+	"popupDiagExpiredCookie": {
+	  "message": "Un cookie de connexion périmé bloque le double appui sur ce site.",
+	  "description": "Diagnostic du popup : cookie wordpress_logged_in périmé selon sa propre valeur"
+	},
+	"popupDiagClearCookiesButton": {
+	  "message": "Supprimer les cookies de connexion",
+	  "description": "Bouton du diagnostic du popup qui supprime les cookies de connexion périmés"
+	},
+	"popupDiagCookiesCleared": {
+	  "message": "Cookies supprimés",
+	  "description": "Message de confirmation après suppression des cookies de connexion depuis le popup"
+	},
+	"popupDiagLoggedIn": {
+	  "message": "Connecté sur ce site : le double appui reste inactif.",
+	  "description": "Diagnostic du popup : cookie valide ou utilisateur visiblement connecté"
+	},
 	"creditsMadeBy": {
 	  "message": "Créé par <a href=\"https://www.reuhno.fr/\" target=\"_blank\" rel=\"noopener\">Renaud Pacouil</a> pour l'agence web La Boîte à Re.",
 	  "description": "Crédits de la page de réglages : ligne auteur (contient un lien HTML brut, injecté via innerHTML)"

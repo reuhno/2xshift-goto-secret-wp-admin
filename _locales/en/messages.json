@@ -319,6 +319,34 @@
 	"message": "No rule, no default suggestion",
 	"description": "Popup state line when there is no rule and no default proposal"
   },
+  "popupDiagReload": {
+	"message": "The extension is not active on this tab, which was opened before it was last reloaded.",
+	"description": "Popup diagnostic: content script unreachable on the active tab"
+  },
+  "popupDiagReloadButton": {
+	"message": "Reload the page",
+	"description": "Popup diagnostic button that reloads the active tab"
+  },
+  "popupDiagNotWordPress": {
+	"message": "Not detected as a WordPress site: the double press stays inactive here.",
+	"description": "Popup diagnostic: page not recognized as WordPress"
+  },
+  "popupDiagExpiredCookie": {
+	"message": "An expired login cookie is blocking the double press on this site.",
+	"description": "Popup diagnostic: wordpress_logged_in cookie expired according to its own value"
+  },
+  "popupDiagClearCookiesButton": {
+	"message": "Remove login cookies",
+	"description": "Popup diagnostic button that removes the expired login cookies"
+  },
+  "popupDiagCookiesCleared": {
+	"message": "Cookies removed",
+	"description": "Confirmation message after removing login cookies from the popup"
+  },
+  "popupDiagLoggedIn": {
+	"message": "Logged in on this site: the double press stays inactive.",
+	"description": "Popup diagnostic: valid cookie or visibly logged-in user"
+  },
   "creditsMadeBy": {
 	"message": "Created by <a href=\"https://www.reuhno.fr/\" target=\"_blank\" rel=\"noopener\">Renaud Pacouil</a> for the web agency La Boîte à Re.",
 	"description": "Options page credits: author line (contains a raw HTML link, injected via innerHTML)"

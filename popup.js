@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	const mainEl = document.getElementById('popup-main');
 	const hostEl = document.getElementById('popup-host');
 	const stateEl = document.getElementById('popup-state');
+	const diagnosticEl = document.getElementById('popup-diagnostic');
+	const diagnosticTextEl = document.getElementById('popup-diagnostic-text');
+	const diagnosticButtonEl = document.getElementById('popup-diagnostic-button');
 	const pathLabelEl = document.getElementById('popup-path-label');
 	const pathInput = document.getElementById('popup-path');
 	const redirectBackLabelEl = document.getElementById('popup-redirect-back-label');
@@ -203,6 +206,79 @@ document.addEventListener('DOMContentLoaded', () => {
 		// celles déjà affichées).
 		let currentGlobalRedirectBack = true;
 
+		// Diagnostic (getPageKind côté content script + cookies via
+		// background.js) : un seul cas affiché à la fois, priorité décrite
+		// dans CLAUDE.md. Rien n'est affiché quand tout va bien (bloc caché).
+
+		function hideDiagnostic() {
+			diagnosticEl.hidden = true;
+			diagnosticEl.classList.remove('popup-diagnostic--warning', 'popup-diagnostic--muted');
+			diagnosticButtonEl.hidden = true;
+			diagnosticButtonEl.onclick = null;
+		}
+
+		function showDiagnostic(kind, textKey, buttonKey, onButtonClick) {
+			diagnosticEl.hidden = false;
+			diagnosticEl.classList.remove('popup-diagnostic--warning', 'popup-diagnostic--muted');
+			diagnosticEl.classList.add(kind === 'warning' ? 'popup-diagnostic--warning' : 'popup-diagnostic--muted');
+			diagnosticTextEl.textContent = chrome.i18n.getMessage(textKey);
+			if (buttonKey && onButtonClick) {
+				diagnosticButtonEl.hidden = false;
+				diagnosticButtonEl.textContent = chrome.i18n.getMessage(buttonKey);
+				diagnosticButtonEl.onclick = onButtonClick;
+			} else {
+				diagnosticButtonEl.hidden = true;
+				diagnosticButtonEl.onclick = null;
+			}
+		}
+
+		function refreshDiagnostic() {
+			chrome.runtime.sendMessage({ action: 'diagnoseSite', url, tabId }, (response) => {
+				if (chrome.runtime.lastError || !response) {
+					hideDiagnostic();
+					return;
+				}
+
+				const { cookieStatus, pageKind, visiblyLoggedIn } = response;
+
+				if (pageKind === 'unreachable') {
+					// Firefox sans accès aux sites : le content script n'est pas
+					// injecté, l'encart de permission explique déjà la situation.
+					if (!permissionWarningEl.hidden) {
+						hideDiagnostic();
+						return;
+					}
+					showDiagnostic('warning', 'popupDiagReload', 'popupDiagReloadButton', () => {
+						chrome.tabs.reload(tabId);
+						window.close();
+					});
+					return;
+				}
+
+				if (pageKind === 'other') {
+					showDiagnostic('muted', 'popupDiagNotWordPress', null, null);
+					return;
+				}
+
+				if (cookieStatus === 'expired') {
+					showDiagnostic('warning', 'popupDiagExpiredCookie', 'popupDiagClearCookiesButton', () => {
+						chrome.runtime.sendMessage({ action: 'clearLoginCookies', url }, () => {
+							showStatus(chrome.i18n.getMessage('popupDiagCookiesCleared'));
+							refreshDiagnostic();
+						});
+					});
+					return;
+				}
+
+				if (cookieStatus === 'valid' || visiblyLoggedIn) {
+					showDiagnostic('muted', 'popupDiagLoggedIn', null, null);
+					return;
+				}
+
+				hideDiagnostic();
+			});
+		}
+
 		function refresh() {
 			chrome.storage.sync.get(['adminUrl', 'redirectBack', siteKey], (data) => {
 				const rule = data[siteKey];
@@ -234,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
 						pathInput.value = '/wp-admin/';
 					}
 				}
+
+				refreshDiagnostic();
 			});
 		}
 

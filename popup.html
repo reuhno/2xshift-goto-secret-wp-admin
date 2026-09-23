@@ -78,7 +78,8 @@
       color: var(--muted);
       margin-bottom: 12px;
     }
-    .popup-permission-warning {
+    .popup-permission-warning,
+    .popup-diagnostic--warning {
       background: var(--bg);
       border: 1px solid var(--border-card);
       border-radius: 8px;
@@ -86,11 +87,21 @@
       margin-bottom: 12px;
       font-size: 13px;
     }
-    .popup-permission-warning p {
+    .popup-permission-warning p,
+    .popup-diagnostic--warning p {
       margin: 0 0 8px;
     }
-    .popup-permission-warning button {
+    .popup-permission-warning button,
+    .popup-diagnostic--warning button {
       width: 100%;
+    }
+    .popup-diagnostic--muted {
+      margin-bottom: 12px;
+    }
+    .popup-diagnostic--muted p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -110,6 +121,11 @@
   <div id="popup-main">
     <p class="popup-host" id="popup-host">exemple.com</p>
     <p class="popup-state" id="popup-state">Aucune règle. Proposition : /wp-admin/</p>
+
+    <div id="popup-diagnostic" hidden>
+      <p id="popup-diagnostic-text"></p>
+      <button type="button" class="btn-secondary" id="popup-diagnostic-button" hidden></button>
+    </div>
 
     <label class="popup-field-label" id="popup-path-label" for="popup-path">Chemin d'admin</label>
     <input type="text" id="popup-path" value="/wp-admin/" placeholder="/wp-admin/">

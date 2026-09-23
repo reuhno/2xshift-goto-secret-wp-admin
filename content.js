@@ -127,15 +127,29 @@ document.addEventListener('keydown', (event) => {
 // Reçoit askSiteRule du service worker quand aucune règle n'existe pour ce
 // site. Ne répond rien : envoie saveSiteRule séparément une fois validé.
 
-chrome.runtime.onMessage.addListener((message) => {
-	if (!message || message.action !== 'askSiteRule') {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	if (!message) {
 		return;
 	}
-	if (overlayOpen) {
-		log('Overlay already open, ignoring askSiteRule.');
+
+	if (message.action === 'askSiteRule') {
+		if (overlayOpen) {
+			log('Overlay already open, ignoring askSiteRule.');
+			return;
+		}
+		showSiteRuleOverlay(message.host, message.usualPath);
 		return;
 	}
-	showSiteRuleOverlay(message.host, message.usualPath);
+
+	if (message.action === 'getPageKind') {
+		// Même mémo que handleDoubleShift : évalué une fois par page, ici à la
+		// demande du popup (action de l'utilisateur), pas au chargement.
+		if (pageKind === null) {
+			pageKind = isWordPressPage() ? 'wp' : 'other';
+			log('Page kind evaluated:', pageKind);
+		}
+		sendResponse({ pageKind, visiblyLoggedIn: isVisiblyLoggedIn() });
+	}
 });
 
 const OVERLAY_CSS = `

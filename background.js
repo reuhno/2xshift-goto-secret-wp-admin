@@ -77,6 +77,42 @@ async function migrateExceptionsIfNeeded() {
 	await removeStorageData('exceptions');
 }
 
+// Extrait l'expiration (secondes Unix) que WordPress inscrit dans la valeur
+// d'un cookie wordpress_logged_in* (format `login|expiration|token|hmac`,
+// séparateur "|" encodé "%7C"). Retourne null si le format est inconnu
+// (valeur non décodable, pas de 2ᵉ champ, ou 2ᵉ champ non entier positif).
+function parseLoginCookieExpiration(value) {
+	let decoded;
+	try {
+		decoded = decodeURIComponent(value);
+	} catch (error) {
+		return null;
+	}
+	const parts = decoded.split('|');
+	if (parts.length < 2) {
+		return null;
+	}
+	const expiration = parseInt(parts[1], 10);
+	return Number.isInteger(expiration) && expiration > 0 ? expiration : null;
+}
+
+// Classe les cookies wordpress_logged_in* d'un site : 'none' s'il n'y en a
+// aucun ; 'valid' si au moins un a une expiration illisible (format inconnu
+// → comportement historique prudent : on le garde pour valide) ou non encore
+// atteinte ; 'expired' sinon (tous périmés selon leur propre valeur — Chrome
+// garde pourtant le cookie en stockage après cette date).
+function classifyLoginCookies(cookies) {
+	const loginCookies = cookies.filter(cookie => cookie.name.startsWith("wordpress_logged_in"));
+	if (loginCookies.length === 0) {
+		return 'none';
+	}
+	const hasValid = loginCookies.some((cookie) => {
+		const expiration = parseLoginCookieExpiration(cookie.value);
+		return expiration === null || expiration * 1000 > Date.now();
+	});
+	return hasValid ? 'valid' : 'expired';
+}
+
 async function handleCheckCookiesAndRedirect(message, sender) {
 	const { url } = message;
 
@@ -94,11 +130,14 @@ async function handleCheckCookiesAndRedirect(message, sender) {
 		debugEnabled = !!data.debug;
 
 		const cookies = await getCookies(url);
-		const wpCookies = cookies.filter(cookie => cookie.name.startsWith("wordpress_logged_in"));
+		const cookieStatus = classifyLoginCookies(cookies);
 
-		if (wpCookies.length > 0) {
+		if (cookieStatus === 'valid') {
 			log("User is logged in.");
 			return;
+		}
+		if (cookieStatus === 'expired') {
+			log("Expired login cookie ignored.");
 		}
 
 		const siteRule = data[siteKey];
@@ -172,7 +211,79 @@ async function handleSaveSiteRule(message, sender) {
 	}
 }
 
-chrome.runtime.onMessage.addListener((message, sender) => {
+// Interroge le content script de l'onglet pour le type de page et l'état
+// visible de connexion. Forme callback (pas de Promise chrome.tabs.sendMessage
+// native fiable côté MV3 pour lire lastError) : toute erreur (content script
+// non injecté, onglet fermé, page ouverte avant le dernier rechargement de
+// l'extension…) ou absence de réponse vaut pageKind 'unreachable'.
+function getPageKindFromTab(tabId) {
+	return new Promise((resolve) => {
+		try {
+			chrome.tabs.sendMessage(tabId, { action: 'getPageKind' }, (response) => {
+				if (chrome.runtime.lastError || !response) {
+					resolve({ pageKind: 'unreachable', visiblyLoggedIn: false });
+					return;
+				}
+				resolve({
+					pageKind: response.pageKind === 'wp' || response.pageKind === 'other' ? response.pageKind : 'unreachable',
+					visiblyLoggedIn: !!response.visiblyLoggedIn
+				});
+			});
+		} catch (error) {
+			resolve({ pageKind: 'unreachable', visiblyLoggedIn: false });
+		}
+	});
+}
+
+// Diagnostic demandé par le popup : cookieStatus par lecture directe des
+// cookies, pageKind/visiblyLoggedIn via le content script de l'onglet.
+async function handleDiagnoseSite(message, sendResponse) {
+	const { url, tabId } = message;
+	try {
+		const cookies = await getCookies(url);
+		const cookieStatus = classifyLoginCookies(cookies);
+		const { pageKind, visiblyLoggedIn } = await getPageKindFromTab(tabId);
+		sendResponse({ cookieStatus, pageKind, visiblyLoggedIn });
+	} catch (error) {
+		log('Error diagnosing site:', error);
+		sendResponse({ cookieStatus: 'none', pageKind: 'unreachable', visiblyLoggedIn: false });
+	}
+}
+
+function removeCookieData(details) {
+	return new Promise((resolve) => {
+		chrome.cookies.remove(details, (removed) => {
+			resolve(removed);
+		});
+	});
+}
+
+// Supprime les cookies de connexion (wordpress_logged_in* et
+// wordpress_sec_*) d'un site, à la demande du popup (cas cookie périmé). Le
+// `path` de chaque cookie est repris tel quel : wordpress_sec_* est posé sur
+// /wp-admin ou /wp-content/plugins, pas sur /.
+async function handleClearLoginCookies(message, sendResponse) {
+	const { url } = message;
+	try {
+		const cookies = await getCookies(url);
+		const toRemove = cookies.filter(cookie =>
+			cookie.name.startsWith("wordpress_logged_in") || cookie.name.startsWith("wordpress_sec_")
+		);
+		const origin = new URL(url).origin;
+		let removed = 0;
+		for (const cookie of toRemove) {
+			await removeCookieData({ url: origin + cookie.path, name: cookie.name });
+			removed += 1;
+		}
+		log("Login cookies cleared:", removed);
+		sendResponse({ removed });
+	} catch (error) {
+		log('Error clearing login cookies:', error);
+		sendResponse({ removed: 0 });
+	}
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message.action === "checkCookiesAndRedirect") {
 		handleCheckCookiesAndRedirect(message, sender);
 	} else if (message.action === "saveSiteRule") {
@@ -183,6 +294,12 @@ chrome.runtime.onMessage.addListener((message, sender) => {
 		handleGoToAdmin(message).catch((error) => {
 			log('Error handling goToAdmin:', error);
 		});
+	} else if (message.action === "diagnoseSite") {
+		handleDiagnoseSite(message, sendResponse);
+		return true;
+	} else if (message.action === "clearLoginCookies") {
+		handleClearLoginCookies(message, sendResponse);
+		return true;
 	}
 });
 
